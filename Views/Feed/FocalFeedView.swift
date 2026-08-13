@@ -14,11 +14,12 @@ public struct FocalFeedView: View {
     @Query(sort: \FocalNote.createdAt, order: .reverse) private var allNotes: [FocalNote]
     
     @State private var searchText: String = ""
-    @State private var selectedFilter: FeedFilter = .all
+    @State private var selectedFilter: FeedFilter = .notes
     @AppStorage("userPreferredColorScheme") private var userPreferredColorScheme: String = "system"
     
     public enum FeedFilter: String, CaseIterable, Identifiable {
-        case all = "Все"
+        case notes = "Заметки"
+        case tasks = "Задачи"
         case bookmarked = "Закладки"
         case liked = "Любимые"
         case reminders = "Напоминания"
@@ -40,10 +41,16 @@ public struct FocalFeedView: View {
         allNotes.filter { note in
             let matchesFilter: Bool
             switch selectedFilter {
-            case .all: matchesFilter = true
-            case .bookmarked: matchesFilter = note.isBookmarked
-            case .liked: matchesFilter = note.isLiked
-            case .reminders: matchesFilter = note.reminderDate != nil
+            case .notes:
+                matchesFilter = note.todoItems.isEmpty || !note.title.isEmpty
+            case .tasks:
+                matchesFilter = !note.todoItems.isEmpty
+            case .bookmarked:
+                matchesFilter = note.isBookmarked
+            case .liked:
+                matchesFilter = note.isLiked
+            case .reminders:
+                matchesFilter = note.reminderDate != nil
             }
             
             if searchText.isEmpty {

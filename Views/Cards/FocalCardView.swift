@@ -251,10 +251,9 @@ public struct FocalCardView: View {
     
     private func updateContrast() {
         if note.backgroundImageData != nil {
-            let analysis = ContrastEngine.shared.analyzeLuminance(imageData: note.backgroundImageData)
             withAnimation {
-                self.textColor = analysis.recommendedColor
-                self.shadowOpacity = analysis.shadowOpacity
+                self.textColor = .white
+                self.shadowOpacity = 0.6
             }
         } else {
             withAnimation {

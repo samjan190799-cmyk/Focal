@@ -82,11 +82,11 @@ public struct GlassmorphicOverlayModifier: ViewModifier {
         content
             .background(
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .fill(colorScheme == .dark ? Color.white.opacity(0.06) : Color.black.opacity(0.03))
+                    .fill(.ultraThinMaterial)
                     .overlay(
                         RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                             .stroke(
-                                colorScheme == .dark ? Color.white.opacity(0.12) : Color.black.opacity(0.08),
+                                colorScheme == .dark ? Color.white.opacity(0.18) : Color.black.opacity(0.10),
                                 lineWidth: 1
                             )
                     )

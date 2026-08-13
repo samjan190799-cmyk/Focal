@@ -85,7 +85,7 @@ public struct BackgroundViewManager: View {
                 .scaledToFill()
                 .frame(width: proxy.size.width, height: proxy.size.height)
                 .blur(radius: blurRadius)
-                .overlay(Color.black.opacity(overlayOpacity))
+                .overlay(Color.black.opacity(max(0.3, overlayOpacity)))
                 .clipped()
         }
     }
