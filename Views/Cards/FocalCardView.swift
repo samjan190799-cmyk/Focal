@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 
+@MainActor
 public struct FocalCardView: View {
     @Bindable var note: FocalNote
     

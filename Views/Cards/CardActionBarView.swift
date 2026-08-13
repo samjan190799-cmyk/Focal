@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@MainActor
 public struct CardActionBarView: View {
     @Bindable var note: FocalNote
     var onShare: () -> Void

@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@MainActor
 public struct ProgressRingView: View {
     let progress: Double // от 0.0 до 1.0
     let ratioText: String // Например "3/5"

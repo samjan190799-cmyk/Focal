@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 
+@MainActor
 public struct FocalFeedView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \FocalNote.createdAt, order: .reverse) private var allNotes: [FocalNote]

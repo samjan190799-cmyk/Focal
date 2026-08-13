@@ -15,6 +15,7 @@ import UIKit
 import AppKit
 #endif
 
+@MainActor
 public struct BackgroundViewManager: View {
     let mode: BackgroundMode
     let imageData: Data?

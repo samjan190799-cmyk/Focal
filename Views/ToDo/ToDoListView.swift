@@ -16,6 +16,7 @@ import UIKit
 import AppKit
 #endif
 
+@MainActor
 public struct ToDoListView: View {
     @Bindable var note: FocalNote
     @State private var selectedThumbnailData: Data? = nil
@@ -109,6 +110,7 @@ public struct ToDoListView: View {
 
 // MARK: - Строка задачи (ToDoItemRow)
 
+@MainActor
 public struct ToDoItemRow: View {
     @Bindable var item: ToDoItem
     var onToggle: () -> Void
@@ -181,6 +183,7 @@ public struct ToDoItemRow: View {
 
 // MARK: - Полноэкранный просмотрщик изображений (ThumbnailDetailView)
 
+@MainActor
 public struct ThumbnailDetailView: View {
     let imageData: Data
     @Environment(\.dismiss) var dismiss

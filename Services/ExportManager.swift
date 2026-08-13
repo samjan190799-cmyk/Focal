@@ -37,6 +37,7 @@ public final class ExportManager {
 
 // MARK: - Макет 9:16 для экспорта карточки (StoryExportContainerView)
 
+@MainActor
 public struct StoryExportContainerView: View {
     let note: FocalNote
     
