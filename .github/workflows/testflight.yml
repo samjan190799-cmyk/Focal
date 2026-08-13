@@ -40,6 +40,7 @@ jobs:
                      -configuration Release \
                      -archivePath build/Focal.xcarchive \
                      archive \
+                     DEVELOPMENT_TEAM=V7J345DY58 \
                      -allowProvisioningUpdates \
                      -authenticationKeyID "$KEY_ID" \
                      -authenticationKeyIssuerID "$ISSUER_ID" \
@@ -54,6 +55,7 @@ jobs:
                      -archivePath build/Focal.xcarchive \
                      -exportOptionsPlist ExportOptions.plist \
                      -exportPath build/ \
+                     DEVELOPMENT_TEAM=V7J345DY58 \
                      -allowProvisioningUpdates \
                      -authenticationKeyID "$KEY_ID" \
                      -authenticationKeyIssuerID "$ISSUER_ID" \

@@ -4,10 +4,12 @@
 <dict>
     <key>method</key>
     <string>app-store</string>
-    <key>destination</key>
-    <string>export</string>
+    <key>teamID</key>
+    <string>V7J345DY58</string>
     <key>signingStyle</key>
     <string>automatic</string>
+    <key>destination</key>
+    <string>export</string>
     <key>manageAppVersionAndBuildNumber</key>
     <true/>
 </dict>
