@@ -126,8 +126,13 @@ public struct FocalFeedView: View {
                     }
                     .padding(.top, 8)
                     
-                    // Лента карточек заметок
-                    if filteredNotes.isEmpty {
+                    // Лента карточек заметок или каскадный стек задач
+                    if selectedFilter == .tasks {
+                        StackedTasksFeedView(
+                            notes: filteredNotes,
+                            onCreateNote: createNewNote
+                        )
+                    } else if filteredNotes.isEmpty {
                         Spacer()
                         VStack(spacing: 14) {
                             Image(systemName: "note.text.badge.plus")

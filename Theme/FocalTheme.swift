@@ -26,6 +26,21 @@ public enum FocalTheme {
     public static let accentPastelPink = Color(red: 0.92, green: 0.45, blue: 0.68)
     public static let accentPastelGreen = Color(red: 0.35, green: 0.75, blue: 0.55)
     
+    // Пастельная палитра для каскадного стека карточек
+    public static let pastelCream = Color(red: 0.99, green: 0.96, blue: 0.89)
+    public static let pastelPink = Color(red: 0.99, green: 0.91, blue: 0.93)
+    public static let pastelBlue = Color(red: 0.90, green: 0.95, blue: 0.99)
+    public static let pastelPurple = Color(red: 0.95, green: 0.91, blue: 0.99)
+    public static let pastelGreen = Color(red: 0.91, green: 0.97, blue: 0.94)
+    
+    public static let pastelPalette: [Color] = [
+        pastelCream, pastelPink, pastelBlue, pastelPurple, pastelGreen
+    ]
+    
+    public static func pastelColor(for index: Int) -> Color {
+        pastelPalette[abs(index) % pastelPalette.count]
+    }
+    
     public static let priorityHigh = Color(red: 0.90, green: 0.30, blue: 0.30)
     public static let priorityMedium = Color(red: 0.92, green: 0.58, blue: 0.18)
     public static let priorityLow = Color(red: 0.30, green: 0.72, blue: 0.48)
