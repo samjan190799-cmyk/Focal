@@ -29,10 +29,7 @@ jobs:
           mkdir -p ~/.appstoreconnect/private_keys
           echo "$APP_STORE_CONNECT_API_KEY_BASE64" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${KEY_ID}.p8
 
-      - name: Build and Sign Xcode Archive
-        env:
-          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
-          ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+      - name: Build Xcode Archive
         run: |
           xcodebuild -project Focal.xcodeproj \
                      -scheme Focal \
@@ -40,34 +37,29 @@ jobs:
                      -configuration Release \
                      -archivePath build/Focal.xcarchive \
                      archive \
-                     DEVELOPMENT_TEAM=V7J345DY58 \
-                     -allowProvisioningUpdates \
-                     -authenticationKeyID "$KEY_ID" \
-                     -authenticationKeyIssuerID "$ISSUER_ID" \
-                     -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${KEY_ID}.p8"
+                     CODE_SIGNING_ALLOWED=NO \
+                     CODE_SIGNING_REQUIRED=NO \
+                     CODE_SIGN_IDENTITY=""
 
-      - name: Export Signed IPA
-        env:
-          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
-          ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+      - name: Package App into IPA with Provisioning Profile
         run: |
-          xcodebuild -exportArchive \
-                     -archivePath build/Focal.xcarchive \
-                     -exportOptionsPlist ExportOptions.plist \
-                     -exportPath build/ \
-                     DEVELOPMENT_TEAM=V7J345DY58 \
-                     -allowProvisioningUpdates \
-                     -authenticationKeyID "$KEY_ID" \
-                     -authenticationKeyIssuerID "$ISSUER_ID" \
-                     -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${KEY_ID}.p8" || \
-          (mkdir -p build/Payload && cp -R build/Focal.xcarchive/Products/Applications/Focal.app build/Payload/ && cd build && zip -r Focal.ipa Payload)
+          echo "Packaging Focal.app into Focal.ipa..."
+          mkdir -p build/Payload
+          cp -R build/Focal.xcarchive/Products/Applications/Focal.app build/Payload/
+          
+          if [ -f "embedded.mobileprovision" ]; then
+            echo "Embedding App Store provisioning profile..."
+            cp embedded.mobileprovision build/Payload/Focal.app/embedded.mobileprovision
+          fi
+          
+          cd build && zip -r Focal.ipa Payload
 
       - name: Upload IPA to App Store Connect / TestFlight
         env:
           KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
           ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
         run: |
-          echo "Uploading Focal.ipa to TestFlight..."
+          echo "Uploading Focal.ipa to TestFlight via App Store Connect API..."
           xcrun altool --upload-app \
                        --type ios \
                        --file "build/Focal.ipa" \
