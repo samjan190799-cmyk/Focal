@@ -64,13 +64,13 @@ public struct CardActionBarView: View {
         withAnimation(.spring(response: 0.3, dampingFraction: 0.5)) {
             note.isLiked.toggle()
         }
-        HapticManager.shared.impact(.light)
+        HapticManager.shared.impactLight()
     }
     
     private func toggleBookmark() {
         withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
             note.isBookmarked.toggle()
         }
-        HapticManager.shared.impact(.light)
+        HapticManager.shared.impactLight()
     }
 }

@@ -169,7 +169,7 @@ public struct FocalFeedView: View {
         newNote.todoItems.append(sampleTask)
         
         modelContext.insert(newNote)
-        HapticManager.shared.impact(.medium)
+        HapticManager.shared.impactMedium()
     }
     
     private func seedSampleData() {
@@ -198,6 +198,6 @@ public struct FocalFeedView: View {
         
         modelContext.insert(note1)
         modelContext.insert(note2)
-        HapticManager.shared.notification(.success)
+        HapticManager.shared.notification(0)
     }
 }

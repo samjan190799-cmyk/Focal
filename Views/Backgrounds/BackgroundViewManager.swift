@@ -7,6 +7,14 @@
 
 import SwiftUI
 
+#if canImport(UIKit)
+import UIKit
+#endif
+
+#if canImport(AppKit)
+import AppKit
+#endif
+
 public struct BackgroundViewManager: View {
     let mode: BackgroundMode
     let imageData: Data?
@@ -128,7 +136,7 @@ public struct BackgroundViewManager: View {
                             }
                             .onEnded { _ in
                                 lastOffset = offset
-                                HapticManager.shared.impact(.light)
+                                HapticManager.shared.impactLight()
                             },
                         MagnificationGesture()
                             .onChanged { val in

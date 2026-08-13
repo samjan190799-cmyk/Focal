@@ -37,7 +37,9 @@ jobs:
                      -configuration Release \
                      -archivePath build/Focal.xcarchive \
                      archive \
-                     CODE_SIGNING_ALLOWED=NO
+                     CODE_SIGNING_ALLOWED=NO \
+                     CODE_SIGNING_REQUIRED=NO \
+                     CODE_SIGN_IDENTITY=""
 
       - name: Export IPA & Upload to TestFlight
         env:

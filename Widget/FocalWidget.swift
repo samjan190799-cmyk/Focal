@@ -106,7 +106,6 @@ public struct FocalWidgetEntryView: View {
     }
 }
 
-@main
 public struct FocalWidget: Widget {
     let kind: String = "FocalWidget"
     

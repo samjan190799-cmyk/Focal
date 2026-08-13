@@ -18,8 +18,7 @@ struct FocalApp: App {
         ])
         let modelConfiguration = ModelConfiguration(
             schema: schema,
-            isStoredInMemoryOnly: false,
-            cloudKitDatabase: .automatic
+            isStoredInMemoryOnly: false
         )
         
         do {

@@ -8,6 +8,14 @@
 import SwiftUI
 import SwiftData
 
+#if canImport(UIKit)
+import UIKit
+#endif
+
+#if canImport(AppKit)
+import AppKit
+#endif
+
 public struct ToDoListView: View {
     @Bindable var note: FocalNote
     @State private var selectedThumbnailData: Data? = nil
@@ -51,7 +59,7 @@ public struct ToDoListView: View {
                                 item.isCompleted.toggle()
                                 note.updatedAt = Date()
                             }
-                            HapticManager.shared.impact(.medium)
+                            HapticManager.shared.impactMedium()
                         },
                         onTapThumbnail: { data in
                             selectedThumbnailData = data
@@ -95,7 +103,7 @@ public struct ToDoListView: View {
         note.todoItems.append(newItem)
         note.updatedAt = Date()
         newTodoText = ""
-        HapticManager.shared.impact(.light)
+        HapticManager.shared.impactLight()
     }
 }
 
