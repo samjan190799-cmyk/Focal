@@ -2,27 +2,33 @@
 // FocalTheme.swift
 // FocalApp
 //
-// Дизайн-система Focal: Неоморфизм, Глассморфизм, Пастельная палитра и Типографика
+// Дизайн-система Focal: Классические Светлая и Темная темы, Неоморфизм и Глассморфизм
 //
 
 import SwiftUI
 
 public enum FocalTheme {
-    // MARK: - Цвета
-    public static let backgroundLight = Color(red: 0.94, green: 0.95, blue: 0.97)
-    public static let backgroundDark = Color(red: 0.10, green: 0.11, blue: 0.13)
+    // MARK: - Цвета Классических тем
+    #if os(iOS)
+    public static let backgroundLight = Color(uiColor: .systemGroupedBackground)
+    public static let cardSurfaceLight = Color(uiColor: .secondarySystemGroupedBackground)
+    public static let backgroundDark = Color(uiColor: .systemGroupedBackground)
+    public static let cardSurfaceDark = Color(uiColor: .secondarySystemGroupedBackground)
+    #else
+    public static let backgroundLight = Color(red: 0.95, green: 0.95, blue: 0.97)
+    public static let cardSurfaceLight = Color.white
+    public static let backgroundDark = Color(red: 0.08, green: 0.08, blue: 0.10)
+    public static let cardSurfaceDark = Color(red: 0.15, green: 0.16, blue: 0.20)
+    #endif
     
-    public static let cardSurfaceLight = Color(red: 0.96, green: 0.97, blue: 0.99)
-    public static let cardSurfaceDark = Color(red: 0.14, green: 0.15, blue: 0.18)
+    public static let accentPastelPurple = Color(red: 0.55, green: 0.45, blue: 0.92)
+    public static let accentPastelBlue = Color(red: 0.35, green: 0.60, blue: 0.95)
+    public static let accentPastelPink = Color(red: 0.92, green: 0.45, blue: 0.68)
+    public static let accentPastelGreen = Color(red: 0.35, green: 0.75, blue: 0.55)
     
-    public static let accentPastelPurple = Color(red: 0.72, green: 0.65, blue: 0.94)
-    public static let accentPastelBlue = Color(red: 0.60, green: 0.78, blue: 0.98)
-    public static let accentPastelPink = Color(red: 0.96, green: 0.68, blue: 0.81)
-    public static let accentPastelGreen = Color(red: 0.64, green: 0.88, blue: 0.75)
-    
-    public static let priorityHigh = Color(red: 0.95, green: 0.40, blue: 0.40)
-    public static let priorityMedium = Color(red: 0.96, green: 0.70, blue: 0.30)
-    public static let priorityLow = Color(red: 0.45, green: 0.80, blue: 0.60)
+    public static let priorityHigh = Color(red: 0.90, green: 0.30, blue: 0.30)
+    public static let priorityMedium = Color(red: 0.92, green: 0.58, blue: 0.18)
+    public static let priorityLow = Color(red: 0.30, green: 0.72, blue: 0.48)
     
     public static let gradientPrimary = LinearGradient(
         colors: [accentPastelPurple, accentPastelBlue],
@@ -33,9 +39,9 @@ public enum FocalTheme {
     // MARK: - Неоморфные тени
     public static func neumorphicShadow(colorScheme: ColorScheme) -> (light: Color, dark: Color) {
         if colorScheme == .dark {
-            return (light: Color.black.opacity(0.6), dark: Color.white.opacity(0.04))
+            return (light: Color.black.opacity(0.5), dark: Color.white.opacity(0.04))
         } else {
-            return (light: Color.black.opacity(0.12), dark: Color.white.opacity(0.9))
+            return (light: Color.black.opacity(0.08), dark: Color.white.opacity(0.85))
         }
     }
 }
@@ -56,13 +62,14 @@ public struct NeumorphicCardModifier: ViewModifier {
             .background(
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                     .fill(colorScheme == .dark ? FocalTheme.cardSurfaceDark : FocalTheme.cardSurfaceLight)
-                    .shadow(color: shadows.light, radius: 12, x: 6, y: 6)
-                    .shadow(color: shadows.dark, radius: 12, x: -6, y: -6)
+                    .shadow(color: shadows.light, radius: 10, x: 4, y: 6)
+                    .shadow(color: shadows.dark, radius: 10, x: -4, y: -4)
             )
     }
 }
 
 public struct GlassmorphicOverlayModifier: ViewModifier {
+    @Environment(\.colorScheme) var colorScheme
     var opacity: Double
     var cornerRadius: CGFloat
     
@@ -75,15 +82,11 @@ public struct GlassmorphicOverlayModifier: ViewModifier {
         content
             .background(
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .fill(.ultraThinMaterial.opacity(0.85))
+                    .fill(colorScheme == .dark ? Color.white.opacity(0.06) : Color.black.opacity(0.03))
                     .overlay(
                         RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                             .stroke(
-                                LinearGradient(
-                                    colors: [.white.opacity(0.4), .white.opacity(0.05)],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ),
+                                colorScheme == .dark ? Color.white.opacity(0.12) : Color.black.opacity(0.08),
                                 lineWidth: 1
                             )
                     )
@@ -100,3 +103,4 @@ extension View {
         self.modifier(GlassmorphicOverlayModifier(opacity: opacity, cornerRadius: cornerRadius))
     }
 }
+

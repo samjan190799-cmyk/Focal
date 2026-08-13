@@ -18,6 +18,7 @@ import AppKit
 
 @MainActor
 public struct ToDoListView: View {
+    @Environment(\.modelContext) private var modelContext
     @Bindable var note: FocalNote
     @State private var selectedThumbnailData: Data? = nil
     @State private var showThumbnailSheet: Bool = false
@@ -47,7 +48,7 @@ public struct ToDoListView: View {
             
             // Элементы задач
             if note.todoItems.isEmpty {
-                Text("Нет добавлена задач")
+                Text("Нет задач")
                     .font(.caption)
                     .foregroundColor(.secondary)
                     .italic()
@@ -59,8 +60,18 @@ public struct ToDoListView: View {
                             withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
                                 item.isCompleted.toggle()
                                 note.updatedAt = Date()
+                                try? modelContext.save()
                             }
                             HapticManager.shared.impactMedium()
+                        },
+                        onDelete: {
+                            withAnimation(.spring()) {
+                                modelContext.delete(item)
+                                note.todoItems.removeAll(where: { $0.id == item.id })
+                                note.updatedAt = Date()
+                                try? modelContext.save()
+                            }
+                            HapticManager.shared.impactLight()
                         },
                         onTapThumbnail: { data in
                             selectedThumbnailData = data
@@ -71,21 +82,25 @@ public struct ToDoListView: View {
             }
             
             // Инпут добавления новой задачи
-            HStack {
+            HStack(spacing: 8) {
                 TextField("Новая задача...", text: $newTodoText)
                     .font(.system(size: 14, weight: .regular))
                     .textFieldStyle(.plain)
-                    .padding(.horizontal, 10)
+                    .padding(.horizontal, 12)
                     .padding(.vertical, 8)
-                    .background(Color.primary.opacity(0.05))
-                    .cornerRadius(8)
+                    .background(Color.primary.opacity(0.06))
+                    .cornerRadius(10)
+                    .onSubmit {
+                        addNewItem()
+                    }
                 
                 Button(action: addNewItem) {
                     Image(systemName: "plus.circle.fill")
-                        .font(.system(size: 22))
+                        .font(.system(size: 28, weight: .bold))
                         .foregroundStyle(FocalTheme.gradientPrimary)
+                        .contentShape(Circle())
                 }
-                .disabled(newTodoText.trimmingCharacters(in: .whitespaces).isEmpty)
+                .buttonStyle(.plain)
             }
             .padding(.top, 6)
         }
@@ -98,13 +113,18 @@ public struct ToDoListView: View {
     
     private func addNewItem() {
         let trimmed = newTodoText.trimmingCharacters(in: .whitespaces)
-        guard !trimmed.isEmpty else { return }
+        let textToAdd = trimmed.isEmpty ? "Новая задача" : trimmed
         
-        let newItem = ToDoItem(text: trimmed, isCompleted: false, priority: .medium)
-        note.todoItems.append(newItem)
+        let newItem = ToDoItem(text: textToAdd, isCompleted: false, priority: .medium)
+        newItem.note = note
+        modelContext.insert(newItem)
+        if !note.todoItems.contains(where: { $0.id == newItem.id }) {
+            note.todoItems.append(newItem)
+        }
         note.updatedAt = Date()
+        try? modelContext.save()
         newTodoText = ""
-        HapticManager.shared.impactLight()
+        HapticManager.shared.impactMedium()
     }
 }
 
@@ -114,6 +134,7 @@ public struct ToDoListView: View {
 public struct ToDoItemRow: View {
     @Bindable var item: ToDoItem
     var onToggle: () -> Void
+    var onDelete: () -> Void
     var onTapThumbnail: (Data) -> Void
     
     public var body: some View {
@@ -127,22 +148,42 @@ public struct ToDoItemRow: View {
             }
             .buttonStyle(.plain)
             
-            // Текст задачи с анимированным зачеркиванием
-            Text(item.text)
+            // Редактируемый текст задачи с зачеркиванием при выполнении
+            TextField("Задача...", text: $item.text)
                 .font(.system(size: 14, weight: item.isCompleted ? .regular : .medium))
                 .foregroundColor(item.isCompleted ? .secondary : .primary)
                 .strikethrough(item.isCompleted, color: .secondary)
+                .textFieldStyle(.plain)
             
             Spacer()
             
             // Бедж приоритета
-            Text(item.priority.titleRu)
-                .font(.system(size: 10, weight: .bold))
-                .padding(.horizontal, 6)
-                .padding(.vertical, 2)
-                .background(priorityColor(item.priority).opacity(0.15))
-                .foregroundColor(priorityColor(item.priority))
-                .cornerRadius(6)
+            Menu {
+                ForEach(Priority.allCases, id: \.self) { p in
+                    Button(action: {
+                        item.priority = p
+                        HapticManager.shared.selection()
+                    }) {
+                        Text(p.titleRu)
+                    }
+                }
+            } label: {
+                Text(item.priority.titleRu)
+                    .font(.system(size: 10, weight: .bold))
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 3)
+                    .background(priorityColor(item.priority).opacity(0.18))
+                    .foregroundColor(priorityColor(item.priority))
+                    .cornerRadius(6)
+            }
+            
+            // Кнопка удаления задачи
+            Button(action: onDelete) {
+                Image(systemName: "xmark")
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundColor(.secondary.opacity(0.5))
+            }
+            .buttonStyle(.plain)
             
             // Медиа-миниатюра при наличии
             if let thumbData = item.thumbnailData, let image = imageFromData(thumbData) {

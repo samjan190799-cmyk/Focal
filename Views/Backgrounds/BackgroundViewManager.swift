@@ -56,12 +56,8 @@ public struct BackgroundViewManager: View {
                     floatingObjectView(image: image)
                 }
             } else {
-                // Текстурный плейсхолдер по умолчанию при отсутствии изображения
-                LinearGradient(
-                    colors: [FocalTheme.accentPastelPurple.opacity(0.15), FocalTheme.accentPastelBlue.opacity(0.15)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
+                // При отсутствии изображения используется чистый адаптивный системный фон карточки
+                Color.clear
             }
         }
     }

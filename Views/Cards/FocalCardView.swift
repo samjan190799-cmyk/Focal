@@ -10,6 +10,7 @@ import SwiftData
 
 @MainActor
 public struct FocalCardView: View {
+    @Environment(\.modelContext) private var modelContext
     @Bindable var note: FocalNote
     
     @State private var textColor: Color = .primary
@@ -51,27 +52,35 @@ public struct FocalCardView: View {
                         
                         Spacer()
                         
-                        // Селектор режима фона
+                        // Селектор режима фона и действий
                         Menu {
-                            ForEach(BackgroundMode.allCases, id: \.self) { mode in
-                                Button(action: {
-                                    withAnimation(.spring()) {
-                                        note.backgroundMode = mode
-                                    }
-                                    HapticManager.shared.selection()
-                                }) {
-                                    HStack {
-                                        Text(mode.titleRu)
-                                        if note.backgroundMode == mode {
-                                            Image(systemName: "checkmark")
+                            Section("Режим фона") {
+                                ForEach(BackgroundMode.allCases, id: \.self) { mode in
+                                    Button(action: {
+                                        withAnimation(.spring()) {
+                                            note.backgroundMode = mode
+                                        }
+                                        HapticManager.shared.selection()
+                                    }) {
+                                        HStack {
+                                            Text(mode.titleRu)
+                                            if note.backgroundMode == mode {
+                                                Image(systemName: "checkmark")
+                                            }
                                         }
                                     }
                                 }
                             }
+                            
+                            Section {
+                                Button(role: .destructive, action: deleteNote) {
+                                    Label("Удалить заметку", systemImage: "trash")
+                                }
+                            }
                         } label: {
-                            Image(systemName: "slider.horizontal.3")
-                                .font(.system(size: 16, weight: .semibold))
-                                .padding(8)
+                            Image(systemName: "ellipsis.circle.fill")
+                                .font(.system(size: 20, weight: .medium))
+                                .padding(6)
                                 .background(.thinMaterial)
                                 .clipShape(Circle())
                                 .foregroundColor(textColor)
@@ -177,10 +186,17 @@ public struct FocalCardView: View {
     }
     
     private func updateContrast() {
-        let analysis = ContrastEngine.shared.analyzeLuminance(imageData: note.backgroundImageData)
-        withAnimation {
-            self.textColor = analysis.recommendedColor
-            self.shadowOpacity = analysis.shadowOpacity
+        if note.backgroundImageData != nil {
+            let analysis = ContrastEngine.shared.analyzeLuminance(imageData: note.backgroundImageData)
+            withAnimation {
+                self.textColor = analysis.recommendedColor
+                self.shadowOpacity = analysis.shadowOpacity
+            }
+        } else {
+            withAnimation {
+                self.textColor = .primary
+                self.shadowOpacity = 0.0
+            }
         }
     }
     
@@ -192,4 +208,13 @@ public struct FocalCardView: View {
             }
         }
     }
+    
+    private func deleteNote() {
+        withAnimation(.spring()) {
+            modelContext.delete(note)
+            try? modelContext.save()
+        }
+        HapticManager.shared.impactMedium()
+    }
 }
+
