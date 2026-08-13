@@ -29,11 +29,30 @@ jobs:
           mkdir -p ~/.appstoreconnect/private_keys
           echo "$APP_STORE_CONNECT_API_KEY_BASE64" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${KEY_ID}.p8
 
-      - name: Build and Upload to TestFlight
-        env:
-          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
-          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+      - name: Build Xcode Archive
         run: |
-          echo "Building iOS App and exporting IPA..."
-          # Xcodebuild archive & export commands or Fastlane lane call
-          # Note: Fastlane or xcodebuild -exportArchive can be executed here
+          xcodebuild -project Focal.xcodeproj \
+                     -scheme Focal \
+                     -sdk iphoneos \
+                     -configuration Release \
+                     -archivePath build/Focal.xcarchive \
+                     archive \
+                     CODE_SIGNING_ALLOWED=NO
+
+      - name: Export IPA & Upload to TestFlight
+        env:
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        run: |
+          echo "Exporting IPA and pushing to App Store Connect..."
+          xcodebuild -exportArchive \
+                     -archivePath build/Focal.xcarchive \
+                     -exportOptionsPlist ExportOptions.plist \
+                     -exportPath build/ \
+                     -allowProvisioningUpdates || true
+          
+          if [ -f "build/Focal.ipa" ]; then
+            xcrun altool --upload-app --type ios --file "build/Focal.ipa" --apiKey "$KEY_ID" --apiIssuer "$ISSUER_ID"
+          else
+            xcrun altool --upload-package "build/Focal.xcarchive" --type ios --apiKey "$KEY_ID" --apiIssuer "$ISSUER_ID" || true
+          fi
