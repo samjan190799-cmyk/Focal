@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import PhotosUI
 
 #if canImport(UIKit)
 import UIKit
@@ -30,18 +31,20 @@ public struct ToDoListView: View {
     
     public var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            // Заголовок и кольцевой индикатор прогресса
+            // Заголовок в стиле iPad (ACTIVE TASKS (RICH LIST)) и прогресс-бар
             HStack {
-                Text("Список задач")
-                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                Text("ACTIVE TASKS (RICH LIST)")
+                    .font(.system(size: 11, weight: .heavy, design: .rounded))
+                    .foregroundColor(.secondary)
+                    .tracking(1.0)
                 
                 Spacer()
                 
                 ProgressRingView(
                     progress: note.completionPercentage,
                     ratioText: note.completedRatioText,
-                    ringSize: 32,
-                    lineWidth: 4
+                    ringSize: 28,
+                    lineWidth: 3.5
                 )
             }
             .padding(.bottom, 4)
@@ -137,12 +140,14 @@ public struct ToDoItemRow: View {
     var onDelete: () -> Void
     var onTapThumbnail: (Data) -> Void
     
+    @State private var taskPhotoItem: PhotosPickerItem? = nil
+    
     public var body: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 8) {
             // Интерактивный Чекбокс
             Button(action: onToggle) {
                 Image(systemName: item.isCompleted ? "checkmark.circle.fill" : "circle")
-                    .font(.system(size: 20, weight: .bold))
+                    .font(.system(size: 18, weight: .bold))
                     .foregroundColor(item.isCompleted ? .green : .secondary)
                     .scaleEffect(item.isCompleted ? 1.15 : 1.0)
             }
@@ -150,12 +155,51 @@ public struct ToDoItemRow: View {
             
             // Редактируемый текст задачи с зачеркиванием при выполнении
             TextField("Задача...", text: $item.text)
-                .font(.system(size: 14, weight: item.isCompleted ? .regular : .medium))
+                .font(.system(size: 13, weight: item.isCompleted ? .regular : .medium))
                 .foregroundColor(item.isCompleted ? .secondary : .primary)
                 .strikethrough(item.isCompleted, color: .secondary)
                 .textFieldStyle(.plain)
             
             Spacer()
+            
+            // Кнопка прикрепления фото к задаче
+            PhotosPicker(selection: $taskPhotoItem, matching: .images) {
+                Image(systemName: "paperclip")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(.secondary.opacity(0.7))
+            }
+            .buttonStyle(.plain)
+            .onChange(of: taskPhotoItem) { _, newItem in
+                Task {
+                    if let data = try? await newItem?.loadTransferable(type: Data.self) {
+                        await MainActor.run {
+                            item.thumbnailData = data
+                            HapticManager.shared.impactLight()
+                        }
+                    }
+                }
+            }
+            
+            // Медиа-миниатюра при наличии с бейджем IMAGE PREVIEW
+            if let thumbData = item.thumbnailData, let image = imageFromData(thumbData) {
+                Button(action: { onTapThumbnail(thumbData) }) {
+                    HStack(spacing: 3) {
+                        image
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 22, height: 22)
+                            .cornerRadius(4)
+                        
+                        Text("PREVIEW")
+                            .font(.system(size: 8, weight: .black))
+                            .padding(.horizontal, 4)
+                            .padding(.vertical, 2)
+                            .background(Color.primary.opacity(0.12))
+                            .cornerRadius(4)
+                    }
+                }
+                .buttonStyle(.plain)
+            }
             
             // Бедж приоритета
             Menu {
@@ -169,9 +213,9 @@ public struct ToDoItemRow: View {
                 }
             } label: {
                 Text(item.priority.titleRu)
-                    .font(.system(size: 10, weight: .bold))
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 3)
+                    .font(.system(size: 9, weight: .bold))
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 2)
                     .background(priorityColor(item.priority).opacity(0.18))
                     .foregroundColor(priorityColor(item.priority))
                     .cornerRadius(6)
@@ -180,28 +224,12 @@ public struct ToDoItemRow: View {
             // Кнопка удаления задачи
             Button(action: onDelete) {
                 Image(systemName: "xmark")
-                    .font(.system(size: 11, weight: .bold))
+                    .font(.system(size: 10, weight: .bold))
                     .foregroundColor(.secondary.opacity(0.5))
             }
             .buttonStyle(.plain)
-            
-            // Медиа-миниатюра при наличии
-            if let thumbData = item.thumbnailData, let image = imageFromData(thumbData) {
-                Button(action: { onTapThumbnail(thumbData) }) {
-                    image
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 28, height: 28)
-                        .cornerRadius(6)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 6)
-                                .stroke(Color.primary.opacity(0.2), lineWidth: 1)
-                        )
-                }
-                .buttonStyle(.plain)
-            }
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, 3)
     }
     
     private func priorityColor(_ priority: Priority) -> Color {

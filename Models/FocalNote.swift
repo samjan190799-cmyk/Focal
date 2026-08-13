@@ -17,6 +17,7 @@ public final class FocalNote: Identifiable {
     public var isLiked: Bool
     public var isBookmarked: Bool
     public var backgroundModeRaw: String
+    public var fontDesignRaw: String = "default"
     
     @Attribute(.externalStorage) public var backgroundImageData: Data?
     public var blurRadius: Double
@@ -32,6 +33,23 @@ public final class FocalNote: Identifiable {
     public var backgroundMode: BackgroundMode {
         get { BackgroundMode(rawValue: backgroundModeRaw) ?? .fullBleed }
         set { backgroundModeRaw = newValue.rawValue }
+    }
+    
+    public var fontDesignStyle: Font.Design {
+        get {
+            switch fontDesignRaw {
+            case "serif": return .serif
+            case "rounded": return .rounded
+            default: return .default
+            }
+        }
+        set {
+            switch newValue {
+            case .serif: fontDesignRaw = "serif"
+            case .rounded: fontDesignRaw = "rounded"
+            default: fontDesignRaw = "default"
+            }
+        }
     }
     
     public var completedRatioText: String {
@@ -54,6 +72,7 @@ public final class FocalNote: Identifiable {
         isLiked: Bool = false,
         isBookmarked: Bool = false,
         backgroundMode: BackgroundMode = .fullBleed,
+        fontDesignRaw: String = "default",
         backgroundImageData: Data? = nil,
         blurRadius: Double = 0.0,
         overlayOpacity: Double = 0.3,
@@ -68,6 +87,7 @@ public final class FocalNote: Identifiable {
         self.isLiked = isLiked
         self.isBookmarked = isBookmarked
         self.backgroundModeRaw = backgroundMode.rawValue
+        self.fontDesignRaw = fontDesignRaw
         self.backgroundImageData = backgroundImageData
         self.blurRadius = blurRadius
         self.overlayOpacity = overlayOpacity
