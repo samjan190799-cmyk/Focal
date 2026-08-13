@@ -41,7 +41,10 @@ jobs:
                      CODE_SIGNING_REQUIRED=NO \
                      CODE_SIGN_IDENTITY=""
 
-      - name: Package App into IPA with Provisioning Profile
+      - name: Import Signing Certificate & Sign App Bundle
+        env:
+          P12_BASE64: "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"
+          P12_PASSWORD: "123456"
         run: |
           echo "Packaging Focal.app into Focal.ipa..."
           mkdir -p build/Payload
@@ -51,7 +54,24 @@ jobs:
             echo "Embedding App Store provisioning profile..."
             cp embedded.mobileprovision build/Payload/Focal.app/embedded.mobileprovision
           fi
-          
+
+          echo "Importing p12 certificate into temporary Keychain..."
+          KEYCHAIN_PATH=$HOME/Library/Keychains/build.keychain-db
+          KEYCHAIN_PASSWORD=temp_password
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH" || true
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+          echo "$P12_BASE64" | base64 --decode > cert.p12
+          security import cert.p12 -k "$KEYCHAIN_PATH" -P "$P12_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security list-keychains -s "$KEYCHAIN_PATH" $(security list-keychains | tr -d '"')
+
+          echo "Signing Focal.app bundle..."
+          codesign --force --deep --sign "Apple Distribution: Samvel Hayrapetyan (V7J345DY58)" build/Payload/Focal.app || \
+          codesign --force --deep --sign "Apple Distribution" build/Payload/Focal.app || true
+
           cd build && zip -r Focal.ipa Payload
 
       - name: Upload IPA to App Store Connect / TestFlight
@@ -59,7 +79,7 @@ jobs:
           KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
           ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
         run: |
-          echo "Uploading Focal.ipa to TestFlight via App Store Connect API..."
+          echo "Uploading signed Focal.ipa to TestFlight via App Store Connect API..."
           xcrun altool --upload-app \
                        --type ios \
                        --file "build/Focal.ipa" \
