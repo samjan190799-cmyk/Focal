@@ -7,48 +7,48 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B0000001 /* FocalApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000001 /* FocalApp.swift */; };
-		B0000002 /* CanvasElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000002 /* CanvasElement.swift */; };
-		B0000003 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000003 /* Enums.swift */; };
-		B0000004 /* FocalNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000004 /* FocalNote.swift */; };
-		B0000005 /* ToDoItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000005 /* ToDoItem.swift */; };
-		B0000006 /* ExportManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000006 /* ExportManager.swift */; };
-		B0000007 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000007 /* NotificationManager.swift */; };
-		B0000008 /* FocalTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000008 /* FocalTheme.swift */; };
-		B0000009 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000009 /* HapticManager.swift */; };
-		B0000010 /* ContrastEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000010 /* ContrastEngine.swift */; };
-		B0000011 /* BackgroundViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000011 /* BackgroundViewManager.swift */; };
-		B0000012 /* CardActionBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000012 /* CardActionBarView.swift */; };
-		B0000013 /* FocalCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000013 /* FocalCardView.swift */; };
-		B0000014 /* FocalFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000014 /* FocalFeedView.swift */; };
-		B0000015 /* ProgressRingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000015 /* ProgressRingView.swift */; };
-		B0000016 /* ToDoListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000016 /* ToDoListView.swift */; };
-		B0000017 /* Assets in Resources */ = {isa = PBXBuildFile; fileRef = A0000017 /* Assets */; };
+		B10000010000000000000001 /* FocalApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000001 /* FocalApp.swift */; };
+		B10000010000000000000002 /* CanvasElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000002 /* CanvasElement.swift */; };
+		B10000010000000000000003 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000003 /* Enums.swift */; };
+		B10000010000000000000004 /* FocalNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000004 /* FocalNote.swift */; };
+		B10000010000000000000005 /* ToDoItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000005 /* ToDoItem.swift */; };
+		B10000010000000000000006 /* ExportManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000006 /* ExportManager.swift */; };
+		B10000010000000000000007 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000007 /* NotificationManager.swift */; };
+		B10000010000000000000008 /* FocalTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000008 /* FocalTheme.swift */; };
+		B10000010000000000000009 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000009 /* HapticManager.swift */; };
+		B1000001000000000000000A /* ContrastEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001000000000000000A /* ContrastEngine.swift */; };
+		B1000001000000000000000B /* BackgroundViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001000000000000000B /* BackgroundViewManager.swift */; };
+		B1000001000000000000000C /* CardActionBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001000000000000000C /* CardActionBarView.swift */; };
+		B1000001000000000000000D /* FocalCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001000000000000000D /* FocalCardView.swift */; };
+		B1000001000000000000000E /* FocalFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001000000000000000E /* FocalFeedView.swift */; };
+		B1000001000000000000000F /* ProgressRingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001000000000000000F /* ProgressRingView.swift */; };
+		B10000010000000000000010 /* ToDoListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000010 /* ToDoListView.swift */; };
+		B10000010000000000000011 /* Assets in Resources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000011 /* Assets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		A0000001 /* FocalApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocalApp.swift; sourceTree = "<group>"; };
-		A0000002 /* CanvasElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/CanvasElement.swift; sourceTree = "<group>"; };
-		A0000003 /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/Enums.swift; sourceTree = "<group>"; };
-		A0000004 /* FocalNote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/FocalNote.swift; sourceTree = "<group>"; };
-		A0000005 /* ToDoItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/ToDoItem.swift; sourceTree = "<group>"; };
-		A0000006 /* ExportManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/ExportManager.swift; sourceTree = "<group>"; };
-		A0000007 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/NotificationManager.swift; sourceTree = "<group>"; };
-		A0000008 /* FocalTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme/FocalTheme.swift; sourceTree = "<group>"; };
-		A0000009 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme/HapticManager.swift; sourceTree = "<group>"; };
-		A0000010 /* ContrastEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities/ContrastEngine.swift; sourceTree = "<group>"; };
-		A0000011 /* BackgroundViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Backgrounds/BackgroundViewManager.swift; sourceTree = "<group>"; };
-		A0000012 /* CardActionBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Cards/CardActionBarView.swift; sourceTree = "<group>"; };
-		A0000013 /* FocalCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Cards/FocalCardView.swift; sourceTree = "<group>"; };
-		A0000014 /* FocalFeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Feed/FocalFeedView.swift; sourceTree = "<group>"; };
-		A0000015 /* ProgressRingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/ToDo/ProgressRingView.swift; sourceTree = "<group>"; };
-		A0000016 /* ToDoListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/ToDo/ToDoListView.swift; sourceTree = "<group>"; };
-		A0000017 /* Assets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets; sourceTree = "<group>"; };
-		222222223333333344444444 /* Focal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Focal.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A10000010000000000000001 /* FocalApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocalApp.swift; sourceTree = "<group>"; };
+		A10000010000000000000002 /* CanvasElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/CanvasElement.swift; sourceTree = "<group>"; };
+		A10000010000000000000003 /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/Enums.swift; sourceTree = "<group>"; };
+		A10000010000000000000004 /* FocalNote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/FocalNote.swift; sourceTree = "<group>"; };
+		A10000010000000000000005 /* ToDoItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/ToDoItem.swift; sourceTree = "<group>"; };
+		A10000010000000000000006 /* ExportManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/ExportManager.swift; sourceTree = "<group>"; };
+		A10000010000000000000007 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/NotificationManager.swift; sourceTree = "<group>"; };
+		A10000010000000000000008 /* FocalTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme/FocalTheme.swift; sourceTree = "<group>"; };
+		A10000010000000000000009 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme/HapticManager.swift; sourceTree = "<group>"; };
+		A1000001000000000000000A /* ContrastEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities/ContrastEngine.swift; sourceTree = "<group>"; };
+		A1000001000000000000000B /* BackgroundViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Backgrounds/BackgroundViewManager.swift; sourceTree = "<group>"; };
+		A1000001000000000000000C /* CardActionBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Cards/CardActionBarView.swift; sourceTree = "<group>"; };
+		A1000001000000000000000D /* FocalCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Cards/FocalCardView.swift; sourceTree = "<group>"; };
+		A1000001000000000000000E /* FocalFeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Feed/FocalFeedView.swift; sourceTree = "<group>"; };
+		A1000001000000000000000F /* ProgressRingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/ToDo/ProgressRingView.swift; sourceTree = "<group>"; };
+		A10000010000000000000010 /* ToDoListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/ToDo/ToDoListView.swift; sourceTree = "<group>"; };
+		A10000010000000000000011 /* Assets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets; sourceTree = "<group>"; };
+		A10000000000000000000005 /* Focal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Focal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		555555556666666677777777 /* Frameworks */ = {
+		A10000000000000000000007 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -58,34 +58,34 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		333333334444444455555555 = {
+		A10000000000000000000003 = {
 			isa = PBXGroup;
 			children = (
-				A0000001 /* FocalApp.swift */,
-				A0000002 /* CanvasElement.swift */,
-				A0000003 /* Enums.swift */,
-				A0000004 /* FocalNote.swift */,
-				A0000005 /* ToDoItem.swift */,
-				A0000006 /* ExportManager.swift */,
-				A0000007 /* NotificationManager.swift */,
-				A0000008 /* FocalTheme.swift */,
-				A0000009 /* HapticManager.swift */,
-				A0000010 /* ContrastEngine.swift */,
-				A0000011 /* BackgroundViewManager.swift */,
-				A0000012 /* CardActionBarView.swift */,
-				A0000013 /* FocalCardView.swift */,
-				A0000014 /* FocalFeedView.swift */,
-				A0000015 /* ProgressRingView.swift */,
-				A0000016 /* ToDoListView.swift */,
-				A0000017 /* Assets */,
-				C0000001 /* Products */,
+				A10000010000000000000001 /* FocalApp.swift */,
+				A10000010000000000000002 /* CanvasElement.swift */,
+				A10000010000000000000003 /* Enums.swift */,
+				A10000010000000000000004 /* FocalNote.swift */,
+				A10000010000000000000005 /* ToDoItem.swift */,
+				A10000010000000000000006 /* ExportManager.swift */,
+				A10000010000000000000007 /* NotificationManager.swift */,
+				A10000010000000000000008 /* FocalTheme.swift */,
+				A10000010000000000000009 /* HapticManager.swift */,
+				A1000001000000000000000A /* ContrastEngine.swift */,
+				A1000001000000000000000B /* BackgroundViewManager.swift */,
+				A1000001000000000000000C /* CardActionBarView.swift */,
+				A1000001000000000000000D /* FocalCardView.swift */,
+				A1000001000000000000000E /* FocalFeedView.swift */,
+				A1000001000000000000000F /* ProgressRingView.swift */,
+				A10000010000000000000010 /* ToDoListView.swift */,
+				A10000010000000000000011 /* Assets */,
+				A10000000000000000000004 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		C0000001 /* Products */ = {
+		A10000000000000000000004 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				222222223333333344444444 /* Focal.app */,
+				A10000000000000000000005 /* Focal.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -93,13 +93,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		222222223333333344444444 /* Focal */ = {
+		A10000000000000000000002 /* Focal */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D0000001 /* Build configuration list for PBXNativeTarget "Focal" */;
+			buildConfigurationList = A1000000000000000000000A /* Build configuration list for PBXNativeTarget "Focal" */;
 			buildPhases = (
-				444444445555555566666666 /* Sources */,
-				555555556666666677777777 /* Frameworks */,
-				666666667777777788888888 /* Resources */,
+				A10000000000000000000006 /* Sources */,
+				A10000000000000000000007 /* Frameworks */,
+				A10000000000000000000008 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -107,25 +107,25 @@
 			);
 			name = Focal;
 			productName = Focal;
-			productReference = 222222223333333344444444 /* Focal.app */;
+			productReference = A10000000000000000000005 /* Focal.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		111111112222222233333333 /* Project object */ = {
+		A10000000000000000000001 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1540;
 				LastUpgradeCheck = 1540;
 				TargetAttributes = {
-					222222223333333344444444 = {
+					A10000000000000000000002 = {
 						CreatedOnToolsVersion = 15.4;
 					};
 				};
 			};
-			buildConfigurationList = E0000001 /* Build configuration list for PBXProject "Focal" */;
+			buildConfigurationList = A10000000000000000000009 /* Build configuration list for PBXProject "Focal" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -133,55 +133,55 @@
 				en,
 				Base,
 			);
-			mainGroup = 333333334444444455555555;
-			productRefGroup = C0000001 /* Products */;
+			mainGroup = A10000000000000000000003;
+			productRefGroup = A10000000000000000000004 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				222222223333333344444444 /* Focal */,
+				A10000000000000000000002 /* Focal */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		666666667777777788888888 /* Resources */ = {
+		A10000000000000000000008 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B0000017 /* Assets in Resources */,
+				B10000010000000000000011 /* Assets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		444444445555555566666666 /* Sources */ = {
+		A10000000000000000000006 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B0000001 /* FocalApp.swift in Sources */,
-				B0000002 /* CanvasElement.swift in Sources */,
-				B0000003 /* Enums.swift in Sources */,
-				B0000004 /* FocalNote.swift in Sources */,
-				B0000005 /* ToDoItem.swift in Sources */,
-				B0000006 /* ExportManager.swift in Sources */,
-				B0000007 /* NotificationManager.swift in Sources */,
-				B0000008 /* FocalTheme.swift in Sources */,
-				B0000009 /* HapticManager.swift in Sources */,
-				B0000010 /* ContrastEngine.swift in Sources */,
-				B0000011 /* BackgroundViewManager.swift in Sources */,
-				B0000012 /* CardActionBarView.swift in Sources */,
-				B0000013 /* FocalCardView.swift in Sources */,
-				B0000014 /* FocalFeedView.swift in Sources */,
-				B0000015 /* ProgressRingView.swift in Sources */,
-				B0000016 /* ToDoListView.swift in Sources */,
+				B10000010000000000000001 /* FocalApp.swift in Sources */,
+				B10000010000000000000002 /* CanvasElement.swift in Sources */,
+				B10000010000000000000003 /* Enums.swift in Sources */,
+				B10000010000000000000004 /* FocalNote.swift in Sources */,
+				B10000010000000000000005 /* ToDoItem.swift in Sources */,
+				B10000010000000000000006 /* ExportManager.swift in Sources */,
+				B10000010000000000000007 /* NotificationManager.swift in Sources */,
+				B10000010000000000000008 /* FocalTheme.swift in Sources */,
+				B10000010000000000000009 /* HapticManager.swift in Sources */,
+				B1000001000000000000000A /* ContrastEngine.swift in Sources */,
+				B1000001000000000000000B /* BackgroundViewManager.swift in Sources */,
+				B1000001000000000000000C /* CardActionBarView.swift in Sources */,
+				B1000001000000000000000D /* FocalCardView.swift in Sources */,
+				B1000001000000000000000E /* FocalFeedView.swift in Sources */,
+				B1000001000000000000000F /* ProgressRingView.swift in Sources */,
+				B10000010000000000000010 /* ToDoListView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		777777778888888899999999 /* Debug */ = {
+		A1000000000000000000000B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -226,7 +226,7 @@
 			};
 			name = Debug;
 		};
-		888888889999999900000000 /* Release */ = {
+		A1000000000000000000000C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -264,7 +264,7 @@
 			};
 			name = Release;
 		};
-		999999990000000011111111 /* Debug */ = {
+		A1000000000000000000000D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -289,7 +289,7 @@
 			};
 			name = Debug;
 		};
-		000000001111111122222222 /* Release */ = {
+		A1000000000000000000000E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -317,25 +317,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D0000001 /* Build configuration list for PBXNativeTarget "Focal" */ = {
+		A1000000000000000000000A /* Build configuration list for PBXNativeTarget "Focal" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				999999990000000011111111 /* Debug */,
-				000000001111111122222222 /* Release */,
+				A1000000000000000000000D /* Debug */,
+				A1000000000000000000000E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E0000001 /* Build configuration list for PBXProject "Focal" */ = {
+		A10000000000000000000009 /* Build configuration list for PBXProject "Focal" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				777777778888888899999999 /* Debug */,
-				888888889999999900000000 /* Release */,
+				A1000000000000000000000B /* Debug */,
+				A1000000000000000000000C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 111111112222222233333333 /* Project object */;
+	rootObject = A10000000000000000000001 /* Project object */;
 }

@@ -1,0 +1,5 @@
+*.pbxproj text eol=lf
+*.xcscheme text eol=lf
+*.xcworkspacedata text eol=lf
+*.plist text eol=lf
+*.yml text eol=lf
