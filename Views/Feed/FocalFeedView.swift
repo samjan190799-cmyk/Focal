@@ -236,31 +236,6 @@ public struct FocalFeedView: View {
             }
         }
         .preferredColorScheme(colorSchemeOverride)
-        .onAppear {
-            cleanDemoData()
-        }
-    }
-    
-    private func cleanDemoData() {
-        var needsSave = false
-        for note in allNotes {
-            let isDemoTitle = note.title == "Новая заметка Focal" || note.title == "Запуск проекта Focal" || note.title == "Идеи дизайна и UI 2026"
-            let hasDemoTasks = note.todoItems.contains(where: {
-                $0.text == "Нажмите для редактирования" ||
-                $0.text == "Спроектировать SwiftData схему" ||
-                $0.text == "Реализовать Neumorphic Feed" ||
-                $0.text == "Протестировать ContrastEngine" ||
-                $0.text == "Настроить тактильную отдачу (Haptics)" ||
-                $0.text == "Экспорт Story 9:16"
-            })
-            if isDemoTitle || hasDemoTasks {
-                modelContext.delete(note)
-                needsSave = true
-            }
-        }
-        if needsSave {
-            try? modelContext.save()
-        }
     }
     
     private func createNewNote() {
@@ -269,7 +244,13 @@ public struct FocalFeedView: View {
                 title: "",
                 backgroundMode: .fullBleed
             )
-            newNote.todoItems = []
+            if selectedFilter == .tasks {
+                let initialTask = ToDoItem(text: "", isCompleted: false, priority: .medium)
+                initialTask.note = newNote
+                newNote.todoItems = [initialTask]
+            } else {
+                newNote.todoItems = []
+            }
             modelContext.insert(newNote)
             try? modelContext.save()
         }

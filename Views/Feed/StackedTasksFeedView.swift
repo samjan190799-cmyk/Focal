@@ -2,7 +2,7 @@
 // StackedTasksFeedView.swift
 // FocalApp
 //
-// Каскадный стек пастельных карточек для раздела «Задачи» с плавной физикой скролла
+// Ультра-плавный каскадный стек пастельных карточек задач в стиле премиального UI
 //
 
 import SwiftUI
@@ -21,42 +21,50 @@ public struct StackedTasksFeedView: View {
     public var body: some View {
         Group {
             if notes.isEmpty {
-                VStack(spacing: 16) {
+                VStack(spacing: 18) {
                     Spacer()
                     
-                    Image(systemName: "square.stack.3d.up")
-                        .font(.system(size: 56, weight: .semibold))
-                        .foregroundColor(.secondary.opacity(0.6))
+                    ZStack {
+                        Circle()
+                            .fill(FocalTheme.accentPastelPurple.opacity(0.12))
+                            .frame(width: 100, height: 100)
+                        
+                        Image(systemName: "square.stack.3d.up.fill")
+                            .font(.system(size: 46, weight: .bold))
+                            .foregroundColor(FocalTheme.accentPastelPurple)
+                    }
                     
-                    Text("Нет активных задач")
-                        .font(.system(size: 20, weight: .bold, design: .rounded))
+                    Text("Каскадный стек задач пуст")
+                        .font(.system(size: 22, weight: .bold, design: .rounded))
                         .foregroundColor(.primary)
                     
-                    Text("Создайте свою первую задачу в каскадном стеке")
+                    Text("Нажмите '+', чтобы добавить новую задачу в стопку")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal, 32)
+                        .padding(.horizontal, 40)
                     
                     Button(action: onCreateNote) {
-                        HStack(spacing: 8) {
-                            Image(systemName: "plus")
-                            Text("Создать задачу")
+                        HStack(spacing: 10) {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.system(size: 18, weight: .bold))
+                            Text("Создать первую задачу")
                         }
-                        .font(.system(size: 15, weight: .bold))
+                        .font(.system(size: 16, weight: .bold))
                         .foregroundColor(.white)
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 12)
+                        .padding(.horizontal, 28)
+                        .padding(.vertical, 14)
                         .background(FocalTheme.gradientPrimary)
-                        .cornerRadius(22)
+                        .cornerRadius(24)
+                        .shadow(color: FocalTheme.accentPastelPurple.opacity(0.3), radius: 10, x: 0, y: 5)
                     }
-                    .padding(.top, 8)
+                    .padding(.top, 10)
                     
                     Spacer()
                 }
             } else {
                 ScrollView(.vertical, showsIndicators: false) {
-                    LazyVStack(spacing: -38) {
+                    LazyVStack(spacing: -55) {
                         ForEach(Array(notes.enumerated()), id: \.element.id) { index, note in
                             StackedCardItemRow(
                                 note: note,
@@ -66,8 +74,8 @@ public struct StackedTasksFeedView: View {
                         }
                     }
                     .padding(.horizontal, 16)
-                    .padding(.top, 12)
-                    .padding(.bottom, 60)
+                    .padding(.top, 16)
+                    .padding(.bottom, 80)
                 }
                 .scrollBounceBehavior(.always)
             }
@@ -75,7 +83,7 @@ public struct StackedTasksFeedView: View {
     }
 }
 
-// MARK: - Элемент каскадной карточки в стеке (StackedCardItemRow)
+// MARK: - Элемент пастельной каскадной карточки (StackedCardItemRow)
 
 @MainActor
 public struct StackedCardItemRow: View {
@@ -84,15 +92,16 @@ public struct StackedCardItemRow: View {
     let totalCount: Int
     
     @Environment(\.colorScheme) private var colorScheme
+    @State private var isExpanded: Bool = false
     
     public var body: some View {
-        let cardBgColor = note.backgroundImageData == nil ? FocalTheme.pastelColor(for: index) : Color.clear
+        let pastelBg = FocalTheme.pastelColor(for: index)
         let isDarkTheme = colorScheme == .dark && note.backgroundImageData == nil
-        let textPrimaryColor: Color = isDarkTheme ? Color.primary : (note.backgroundImageData != nil ? .white : Color(red: 0.12, green: 0.12, blue: 0.16))
+        let textPrimaryColor: Color = isDarkTheme ? Color.primary : (note.backgroundImageData != nil ? .white : Color(red: 0.10, green: 0.10, blue: 0.14))
         
         VStack(alignment: .leading, spacing: 0) {
             ZStack(alignment: .topLeading) {
-                // Движок фона (Картинка или Пастельный цвет из палитры)
+                // Задний фон: Пастельный цвет или загруженное фоновое фото
                 if note.backgroundImageData != nil {
                     BackgroundViewManager(
                         mode: note.backgroundMode,
@@ -101,44 +110,49 @@ public struct StackedCardItemRow: View {
                         overlayOpacity: note.overlayOpacity
                     )
                 } else {
-                    cardBgColor
+                    pastelBg
                 }
                 
-                // Контент карточки
-                VStack(alignment: .leading, spacing: 12) {
-                    // Шапка каскадной карточки
-                    HStack(alignment: .top) {
-                        VStack(alignment: .leading, spacing: 4) {
-                            HStack(spacing: 6) {
-                                Text("ЗАДАЧА #\(index + 1)")
-                                    .font(.system(size: 9, weight: .black, design: .monospaced))
-                                    .padding(.horizontal, 6)
-                                    .padding(.vertical, 2)
-                                    .background(Color.primary.opacity(0.08))
-                                    .cornerRadius(4)
-                                    .foregroundColor(textPrimaryColor.opacity(0.8))
-                                
-                                Text(note.createdAt.formatted(date: .abbreviated, time: .shortened))
-                                    .font(.system(size: 10, weight: .bold))
-                                    .foregroundColor(textPrimaryColor.opacity(0.7))
-                            }
+                // Содержимое карточки
+                VStack(alignment: .leading, spacing: 14) {
+                    // Верхний бар с индикатором стопки и названием
+                    HStack(alignment: .center) {
+                        HStack(spacing: 8) {
+                            Circle()
+                                .fill(FocalTheme.accentPastelPurple)
+                                .frame(width: 8, height: 8)
                             
-                            TextField("Название задачи...", text: $note.title)
-                                .font(.system(size: 20, weight: .bold, design: note.fontDesignStyle))
-                                .foregroundColor(textPrimaryColor)
+                            Text("КАРТОЧКА ЗАДАЧ #\(index + 1)")
+                                .font(.system(size: 10, weight: .black, design: .monospaced))
+                                .foregroundColor(textPrimaryColor.opacity(0.8))
                         }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(Color.black.opacity(0.06))
+                        .cornerRadius(10)
                         
                         Spacer()
+                        
+                        Text(note.createdAt.formatted(date: .abbreviated, time: .shortened))
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(textPrimaryColor.opacity(0.6))
                     }
-                    .padding(10)
-                    .glassmorphicCard(opacity: 0.2, cornerRadius: 14)
                     
-                    // Блок со списком задач ACTIVE TASKS (RICH LIST)
+                    // Поле названия задачи
+                    TextField("Заголовок задачи...", text: $note.title)
+                        .font(.system(size: 22, weight: .bold, design: note.fontDesignStyle))
+                        .foregroundColor(textPrimaryColor)
+                        .padding(.horizontal, 4)
+                    
+                    // Внутренний список чек-листов задач (ToDoListView)
                     ToDoListView(note: note)
-                        .padding(10)
-                        .glassmorphicCard(opacity: 0.15, cornerRadius: 16)
+                        .padding(12)
+                        .background(
+                            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                                .fill(colorScheme == .dark ? Color.black.opacity(0.25) : Color.white.opacity(0.65))
+                        )
                     
-                    // Нижняя док-панель инструментов iPhone
+                    // Нижний компактный док-бар действий
                     iPhoneDockToolbarView(
                         note: note,
                         onAddBlock: {
@@ -156,26 +170,28 @@ public struct StackedCardItemRow: View {
                         onToggleStyles: {},
                         onOpenSettings: {}
                     )
-                    .padding(.top, 2)
                     
-                    // Нижняя панель действий (Card Action Bar)
+                    // Панель действий с кнопками Like/Share/Bookmark
                     CardActionBarView(
                         note: note,
                         onShare: {},
                         onReminderTap: {}
                     )
                 }
-                .padding(14)
+                .padding(18)
             }
         }
-        .frame(minHeight: 340)
-        .background(cardBgColor)
-        .cornerRadius(28)
+        .frame(minHeight: 320)
+        .background(note.backgroundImageData == nil ? pastelBg : Color.clear)
+        .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .stroke(Color.primary.opacity(0.12), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 32, style: .continuous)
+                .stroke(
+                    colorScheme == .dark ? Color.white.opacity(0.15) : Color.black.opacity(0.08),
+                    lineWidth: 1
+                )
         )
-        .shadow(color: Color.black.opacity(0.14), radius: 10, x: 0, y: 6)
+        .shadow(color: Color.black.opacity(0.16), radius: 14, x: 0, y: 8)
         .zIndex(Double(totalCount - index))
     }
 }
