@@ -41,20 +41,21 @@ jobs:
                      CODE_SIGNING_REQUIRED=NO \
                      CODE_SIGN_IDENTITY=""
 
-      - name: Export IPA & Upload to TestFlight
+      - name: Package App into IPA
+        run: |
+          echo "Packaging Focal.app into Focal.ipa..."
+          mkdir -p build/Payload
+          cp -R build/Focal.xcarchive/Products/Applications/Focal.app build/Payload/
+          cd build && zip -r Focal.ipa Payload
+
+      - name: Upload IPA to App Store Connect / TestFlight
         env:
           KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
           ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
         run: |
-          echo "Exporting IPA and pushing to App Store Connect..."
-          xcodebuild -exportArchive \
-                     -archivePath build/Focal.xcarchive \
-                     -exportOptionsPlist ExportOptions.plist \
-                     -exportPath build/ \
-                     -allowProvisioningUpdates || true
-          
-          if [ -f "build/Focal.ipa" ]; then
-            xcrun altool --upload-app --type ios --file "build/Focal.ipa" --apiKey "$KEY_ID" --apiIssuer "$ISSUER_ID"
-          else
-            xcrun altool --upload-package "build/Focal.xcarchive" --type ios --apiKey "$KEY_ID" --apiIssuer "$ISSUER_ID" || true
-          fi
+          echo "Uploading Focal.ipa to TestFlight via App Store Connect API..."
+          xcrun altool --upload-app \
+                       --type ios \
+                       --file "build/Focal.ipa" \
+                       --apiKey "$KEY_ID" \
+                       --apiIssuer "$ISSUER_ID"
