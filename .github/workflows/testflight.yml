@@ -30,9 +30,6 @@ jobs:
           echo "$APP_STORE_CONNECT_API_KEY_BASE64" | openssl base64 -d -A > ~/.appstoreconnect/private_keys/AuthKey_${KEY_ID}.p8
 
       - name: Build Xcode Archive
-        env:
-          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
-          ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
         run: |
           xcodebuild -project Focal.xcodeproj \
                      -scheme Focal \
@@ -40,12 +37,8 @@ jobs:
                      -configuration Release \
                      -archivePath build/Focal.xcarchive \
                      archive \
-                     CODE_SIGN_STYLE=Automatic \
-                     CODE_SIGN_IDENTITY="Apple Distribution" \
-                     -allowProvisioningUpdates \
-                     -authenticationKeyID "$KEY_ID" \
-                     -authenticationKeyIssuerID "$ISSUER_ID" \
-                     -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${KEY_ID}.p8"
+                     CODE_SIGNING_ALLOWED=NO \
+                     CODE_SIGNING_REQUIRED=NO
 
       - name: Export IPA Package
         env:
