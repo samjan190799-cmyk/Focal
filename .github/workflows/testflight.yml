@@ -30,6 +30,9 @@ jobs:
           echo "$APP_STORE_CONNECT_API_KEY_BASE64" | openssl base64 -d -A > ~/.appstoreconnect/private_keys/AuthKey_${KEY_ID}.p8
 
       - name: Build Xcode Archive
+        env:
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
         run: |
           xcodebuild -project Focal.xcodeproj \
                      -scheme Focal \
@@ -37,55 +40,32 @@ jobs:
                      -configuration Release \
                      -archivePath build/Focal.xcarchive \
                      archive \
-                     CODE_SIGNING_ALLOWED=NO \
-                     CODE_SIGNING_REQUIRED=NO \
-                     CODE_SIGN_IDENTITY=""
+                     -allowProvisioningUpdates \
+                     -authenticationKeyID "$KEY_ID" \
+                     -authenticationKeyIssuerID "$ISSUER_ID" \
+                     -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${KEY_ID}.p8"
 
-      - name: Import Signing Certificate & Sign App Bundle
-        env:
-          P12_BASE64: "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"
-          P12_PASSWORD: "123456"
-        run: |
-          echo "Packaging Focal.app into Focal.ipa..."
-          mkdir -p build/Payload
-          cp -R build/Focal.xcarchive/Products/Applications/Focal.app build/Payload/
-          
-          if [ -f "embedded.mobileprovision" ]; then
-            echo "Embedding App Store provisioning profile..."
-            cp embedded.mobileprovision build/Payload/Focal.app/embedded.mobileprovision
-          fi
-
-          echo "Importing p12 certificate into temporary Keychain..."
-          KEYCHAIN_PATH=$HOME/Library/Keychains/build.keychain-db
-          KEYCHAIN_PASSWORD=temp_password
-
-          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH" || true
-          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-
-          echo "$P12_BASE64" | openssl base64 -d -A > cert.p12
-          security import cert.p12 -k "$KEYCHAIN_PATH" -P "$P12_PASSWORD" -T /usr/bin/codesign -T /usr/bin/security
-          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-          security list-keychains -s "$KEYCHAIN_PATH" $(security list-keychains | tr -d '"')
-
-          echo "Identities in Keychain:"
-          security find-identity -v -p codesigning "$KEYCHAIN_PATH" || true
-
-          echo "Signing Focal.app bundle..."
-          codesign --force --deep --sign "Apple Distribution: Samvel Hayrapetyan (V7J345DY58)" build/Payload/Focal.app || \
-          codesign --force --deep --sign "Apple Distribution" build/Payload/Focal.app || \
-          codesign --force --deep --sign "Samvel Hayrapetyan" build/Payload/Focal.app || true
-
-          cd build && zip -r Focal.ipa Payload
-
-      - name: Upload IPA to App Store Connect / TestFlight
+      - name: Export IPA Package
         env:
           KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
           ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
         run: |
-          echo "Uploading signed Focal.ipa to TestFlight via App Store Connect API..."
+          xcodebuild -exportArchive \
+                     -archivePath build/Focal.xcarchive \
+                     -exportPath build \
+                     -exportOptionsPlist ExportOptions.plist \
+                     -allowProvisioningUpdates \
+                     -authenticationKeyID "$KEY_ID" \
+                     -authenticationKeyIssuerID "$ISSUER_ID" \
+                     -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${KEY_ID}.p8"
+
+      - name: Upload IPA to TestFlight
+        env:
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        run: |
           xcrun altool --upload-app \
                        --type ios \
-                       --file "build/Focal.ipa" \
+                       --file build/Focal.ipa \
                        --apiKey "$KEY_ID" \
                        --apiIssuer "$ISSUER_ID"
