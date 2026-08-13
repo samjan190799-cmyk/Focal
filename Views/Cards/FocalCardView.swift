@@ -100,19 +100,19 @@ public struct FocalCardView: View {
                                     .font(.system(size: 11, weight: .bold))
                                 
                                 Button("Serif") {
-                                    withAnimation { note.fontDesignStyle = .serif }
+                                    withAnimation { note.setFontDesign(.serif) }
                                 }
                                 .buttonStyle(.bordered)
                                 .font(.system(size: 11, weight: .bold, design: .serif))
                                 
                                 Button("Sans") {
-                                    withAnimation { note.fontDesignStyle = .default }
+                                    withAnimation { note.setFontDesign(.default) }
                                 }
                                 .buttonStyle(.bordered)
                                 .font(.system(size: 11, weight: .bold, design: .default))
                                 
                                 Button("Rounded") {
-                                    withAnimation { note.fontDesignStyle = .rounded }
+                                    withAnimation { note.setFontDesign(.rounded) }
                                 }
                                 .buttonStyle(.bordered)
                                 .font(.system(size: 11, weight: .bold, design: .rounded))

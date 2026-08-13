@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftData
+import SwiftUI
 
 @Model
 public final class FocalNote: Identifiable {
@@ -36,19 +37,18 @@ public final class FocalNote: Identifiable {
     }
     
     public var fontDesignStyle: Font.Design {
-        get {
-            switch fontDesignRaw {
-            case "serif": return .serif
-            case "rounded": return .rounded
-            default: return .default
-            }
+        switch fontDesignRaw {
+        case "serif": return .serif
+        case "rounded": return .rounded
+        default: return .default
         }
-        set {
-            switch newValue {
-            case .serif: fontDesignRaw = "serif"
-            case .rounded: fontDesignRaw = "rounded"
-            default: fontDesignRaw = "default"
-            }
+    }
+    
+    public func setFontDesign(_ design: Font.Design) {
+        switch design {
+        case .serif: fontDesignRaw = "serif"
+        case .rounded: fontDesignRaw = "rounded"
+        default: fontDesignRaw = "default"
         }
     }
     

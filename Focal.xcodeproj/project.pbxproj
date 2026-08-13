@@ -23,6 +23,7 @@
 		B1000001000000000000000E /* FocalFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001000000000000000E /* FocalFeedView.swift */; };
 		B1000001000000000000000F /* ProgressRingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001000000000000000F /* ProgressRingView.swift */; };
 		B10000010000000000000010 /* ToDoListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000010 /* ToDoListView.swift */; };
+		B10000010000000000000012 /* iPhoneDockToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000012 /* iPhoneDockToolbarView.swift */; };
 		B10000010000000000000011 /* Assets in Resources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000011 /* Assets */; };
 /* End PBXBuildFile section */
 
@@ -43,6 +44,7 @@
 		A1000001000000000000000E /* FocalFeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Feed/FocalFeedView.swift; sourceTree = "<group>"; };
 		A1000001000000000000000F /* ProgressRingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/ToDo/ProgressRingView.swift; sourceTree = "<group>"; };
 		A10000010000000000000010 /* ToDoListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/ToDo/ToDoListView.swift; sourceTree = "<group>"; };
+		A10000010000000000000012 /* iPhoneDockToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Cards/iPhoneDockToolbarView.swift; sourceTree = "<group>"; };
 		A10000010000000000000011 /* Assets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets; sourceTree = "<group>"; };
 		A10000000000000000000005 /* Focal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Focal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -77,6 +79,7 @@
 				A1000001000000000000000E /* FocalFeedView.swift */,
 				A1000001000000000000000F /* ProgressRingView.swift */,
 				A10000010000000000000010 /* ToDoListView.swift */,
+				A10000010000000000000012 /* iPhoneDockToolbarView.swift */,
 				A10000010000000000000011 /* Assets */,
 				A10000000000000000000004 /* Products */,
 			);
@@ -175,6 +178,7 @@
 				B1000001000000000000000E /* FocalFeedView.swift in Sources */,
 				B1000001000000000000000F /* ProgressRingView.swift in Sources */,
 				B10000010000000000000010 /* ToDoListView.swift in Sources */,
+				B10000010000000000000012 /* iPhoneDockToolbarView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
