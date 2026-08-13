@@ -64,13 +64,17 @@ jobs:
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
 
           echo "$P12_BASE64" | base64 --decode > cert.p12
-          security import cert.p12 -k "$KEYCHAIN_PATH" -P "$P12_PASSWORD" -T /usr/bin/codesign
+          security import cert.p12 -k "$KEYCHAIN_PATH" -P "$P12_PASSWORD" -T /usr/bin/codesign -T /usr/bin/security
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
           security list-keychains -s "$KEYCHAIN_PATH" $(security list-keychains | tr -d '"')
 
+          echo "Identities in Keychain:"
+          security find-identity -v -p codesigning "$KEYCHAIN_PATH" || true
+
           echo "Signing Focal.app bundle..."
           codesign --force --deep --sign "Apple Distribution: Samvel Hayrapetyan (V7J345DY58)" build/Payload/Focal.app || \
-          codesign --force --deep --sign "Apple Distribution" build/Payload/Focal.app || true
+          codesign --force --deep --sign "Apple Distribution" build/Payload/Focal.app || \
+          codesign --force --deep --sign "Samvel Hayrapetyan" build/Payload/Focal.app || true
 
           cd build && zip -r Focal.ipa Payload
 
