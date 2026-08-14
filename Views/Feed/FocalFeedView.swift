@@ -2,7 +2,7 @@
 // FocalFeedView.swift
 // FocalApp
 //
-// Главная лента карточек заметок Focal с поиском, фильтрацией и добавлением заметок
+// Главная лента карточек заметок Focal с поиском, фильтрацией и полноэкранным представлением задач
 //
 
 import SwiftUI
@@ -64,173 +64,185 @@ public struct FocalFeedView: View {
     }
     
     public var body: some View {
-        NavigationStack {
-            ZStack(alignment: .bottomTrailing) {
-                // Классический фон системной группы (нейтральный светлый/темный)
-                #if os(iOS)
-                Color(uiColor: .systemGroupedBackground)
-                    .ignoresSafeArea()
-                #else
-                Color.gray.opacity(0.1)
-                    .ignoresSafeArea()
-                #endif
-                
-                VStack(spacing: 12) {
-                    // Панель поиска и фильтров
-                    VStack(spacing: 10) {
-                        HStack {
-                            Image(systemName: "magnifyingglass")
-                                .foregroundColor(.secondary)
-                            TextField("Поиск заметок и задач...", text: $searchText)
-                                .textFieldStyle(.plain)
-                            if !searchText.isEmpty {
-                                Button(action: { searchText = "" }) {
-                                    Image(systemName: "xmark.circle.fill")
-                                        .foregroundColor(.gray)
-                                }
-                            }
+        ZStack {
+            if selectedFilter == .tasks {
+                // ПОЛНОЭКРАННЫЙ РЕЖИМ ЗАДАЧ В СТИЛЕ «SAVED NEWS» (Full Screen Takeover)
+                StackedTasksFeedView(
+                    notes: allNotes,
+                    onCreateNote: createNewNote,
+                    onSwitchToNotes: {
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
+                            selectedFilter = .notes
                         }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 10)
-                        .background(Color.primary.opacity(0.06))
-                        .cornerRadius(14)
-                        .padding(.horizontal)
+                    }
+                )
+                .transition(.opacity.combined(with: .scale(scale: 0.98)))
+                .ignoresSafeArea()
+            } else {
+                // КЛАССИЧЕСКАЯ ЛЕНТА ЗАМЕТОК FOCAL
+                NavigationStack {
+                    ZStack(alignment: .bottomTrailing) {
+                        #if os(iOS)
+                        Color(uiColor: .systemGroupedBackground)
+                            .ignoresSafeArea()
+                        #else
+                        Color.gray.opacity(0.1)
+                            .ignoresSafeArea()
+                        #endif
                         
-                        // Сегментные фильтры
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 10) {
-                                ForEach(FeedFilter.allCases) { filter in
-                                    Button(action: {
-                                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                            selectedFilter = filter
+                        VStack(spacing: 12) {
+                            // Панель поиска и фильтров
+                            VStack(spacing: 10) {
+                                HStack {
+                                    Image(systemName: "magnifyingglass")
+                                        .foregroundColor(.secondary)
+                                    TextField("Поиск заметок и задач...", text: $searchText)
+                                        .textFieldStyle(.plain)
+                                    if !searchText.isEmpty {
+                                        Button(action: { searchText = "" }) {
+                                            Image(systemName: "xmark.circle.fill")
+                                                .foregroundColor(.gray)
                                         }
-                                        HapticManager.shared.selection()
-                                    }) {
-                                        Text(filter.rawValue)
-                                            .font(.system(size: 13, weight: .bold))
-                                            .padding(.horizontal, 14)
-                                            .padding(.vertical, 8)
-                                            .background(
-                                                selectedFilter == filter ?
-                                                AnyShapeStyle(FocalTheme.gradientPrimary) :
-                                                AnyShapeStyle(Color.primary.opacity(0.07))
-                                            )
-                                            .foregroundColor(selectedFilter == filter ? .white : .primary)
-                                            .cornerRadius(20)
                                     }
-                                    .buttonStyle(.plain)
                                 }
-                            }
-                            .padding(.horizontal)
-                        }
-                    }
-                    .padding(.top, 8)
-                    
-                    // Лента карточек заметок или каскадный стек задач
-                    if selectedFilter == .tasks {
-                        StackedTasksFeedView(
-                            notes: filteredNotes,
-                            onCreateNote: createNewNote
-                        )
-                    } else if filteredNotes.isEmpty {
-                        Spacer()
-                        VStack(spacing: 14) {
-                            Image(systemName: "note.text.badge.plus")
-                                .font(.system(size: 54))
-                                .foregroundColor(.secondary.opacity(0.6))
-                            Text("Нет заметок")
-                                .font(.system(size: 18, weight: .bold))
-                                .foregroundColor(.primary)
-                            Text("Нажмите '+', чтобы создать новую заметку")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                                .multilineTextAlignment(.center)
-                                .padding(.horizontal, 32)
-                            
-                            Button(action: createNewNote) {
-                                HStack {
-                                    Image(systemName: "plus")
-                                    Text("Создать заметку")
-                                }
-                                .font(.system(size: 15, weight: .bold))
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 20)
+                                .padding(.horizontal, 12)
                                 .padding(.vertical, 10)
-                                .background(FocalTheme.gradientPrimary)
-                                .cornerRadius(20)
-                            }
-                            .padding(.top, 6)
-                        }
-                        Spacer()
-                    } else {
-                        ScrollView {
-                            LazyVStack(spacing: 16) {
-                                ForEach(filteredNotes) { note in
-                                    FocalCardView(note: note)
+                                .background(Color.primary.opacity(0.06))
+                                .cornerRadius(14)
+                                .padding(.horizontal)
+                                
+                                // Сегментные фильтры
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: 10) {
+                                        ForEach(FeedFilter.allCases) { filter in
+                                            Button(action: {
+                                                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                                    selectedFilter = filter
+                                                }
+                                                HapticManager.shared.selection()
+                                            }) {
+                                                Text(filter.rawValue)
+                                                    .font(.system(size: 13, weight: .bold))
+                                                    .padding(.horizontal, 14)
+                                                    .padding(.vertical, 8)
+                                                    .background(
+                                                        selectedFilter == filter ?
+                                                        AnyShapeStyle(FocalTheme.gradientPrimary) :
+                                                        AnyShapeStyle(Color.primary.opacity(0.07))
+                                                    )
+                                                    .foregroundColor(selectedFilter == filter ? .white : .primary)
+                                                    .cornerRadius(20)
+                                            }
+                                            .buttonStyle(.plain)
+                                        }
+                                    }
+                                    .padding(.horizontal)
                                 }
                             }
-                            .padding(.vertical, 12)
-                        }
-                    }
-                }
-                
-                // Плавающая FAB-кнопка создания новой заметки
-                Button(action: createNewNote) {
-                    Image(systemName: "plus")
-                        .font(.system(size: 26, weight: .bold))
-                        .foregroundColor(.white)
-                        .frame(width: 60, height: 60)
-                        .background(FocalTheme.gradientPrimary)
-                        .clipShape(Circle())
-                        .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 5)
-                }
-                .buttonStyle(.plain)
-                .padding(.trailing, 24)
-                .padding(.bottom, 24)
-            }
-            .navigationTitle("Focal")
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Menu {
-                        Section("Оформление темы") {
-                            Button(action: { userPreferredColorScheme = "system" }) {
-                                HStack {
-                                    Text("Системная")
-                                    if userPreferredColorScheme == "system" { Image(systemName: "checkmark") }
+                            .padding(.top, 8)
+                            
+                            // Лента заметок
+                            if filteredNotes.isEmpty {
+                                Spacer()
+                                VStack(spacing: 14) {
+                                    Image(systemName: "note.text.badge.plus")
+                                        .font(.system(size: 54))
+                                        .foregroundColor(.secondary.opacity(0.6))
+                                    Text("Нет заметок")
+                                        .font(.system(size: 18, weight: .bold))
+                                        .foregroundColor(.primary)
+                                    Text("Нажмите '+', чтобы создать новую заметку")
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                        .multilineTextAlignment(.center)
+                                        .padding(.horizontal, 32)
+                                    
+                                    Button(action: createNewNote) {
+                                        HStack {
+                                            Image(systemName: "plus")
+                                            Text("Создать заметку")
+                                        }
+                                        .font(.system(size: 15, weight: .bold))
+                                        .foregroundColor(.white)
+                                        .padding(.horizontal, 20)
+                                        .padding(.vertical, 10)
+                                        .background(FocalTheme.gradientPrimary)
+                                        .cornerRadius(20)
+                                    }
+                                    .padding(.top, 6)
                                 }
-                            }
-                            Button(action: { userPreferredColorScheme = "light" }) {
-                                HStack {
-                                    Text("Классическая Светлая")
-                                    if userPreferredColorScheme == "light" { Image(systemName: "checkmark") }
-                                }
-                            }
-                            Button(action: { userPreferredColorScheme = "dark" }) {
-                                HStack {
-                                    Text("Классическая Темная")
-                                    if userPreferredColorScheme == "dark" { Image(systemName: "checkmark") }
+                                Spacer()
+                            } else {
+                                ScrollView {
+                                    LazyVStack(spacing: 16) {
+                                        ForEach(filteredNotes) { note in
+                                            FocalCardView(note: note)
+                                        }
+                                    }
+                                    .padding(.vertical, 12)
                                 }
                             }
                         }
                         
-                        if !allNotes.isEmpty {
-                            Section {
-                                Button(role: .destructive, action: deleteAllNotes) {
-                                    Label("Удалить все заметки", systemImage: "trash")
+                        // Плавающая FAB-кнопка создания новой заметки (только для режима заметок)
+                        Button(action: createNewNote) {
+                            Image(systemName: "plus")
+                                .font(.system(size: 26, weight: .bold))
+                                .foregroundColor(.white)
+                                .frame(width: 60, height: 60)
+                                .background(FocalTheme.gradientPrimary)
+                                .clipShape(Circle())
+                                .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 5)
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.trailing, 24)
+                        .padding(.bottom, 24)
+                    }
+                    .navigationTitle("Focal")
+                    .toolbar {
+                        ToolbarItem(placement: .topBarLeading) {
+                            Menu {
+                                Section("Оформление темы") {
+                                    Button(action: { userPreferredColorScheme = "system" }) {
+                                        HStack {
+                                            Text("Системная")
+                                            if userPreferredColorScheme == "system" { Image(systemName: "checkmark") }
+                                        }
+                                    }
+                                    Button(action: { userPreferredColorScheme = "light" }) {
+                                        HStack {
+                                            Text("Классическая Светлая")
+                                            if userPreferredColorScheme == "light" { Image(systemName: "checkmark") }
+                                        }
+                                    }
+                                    Button(action: { userPreferredColorScheme = "dark" }) {
+                                        HStack {
+                                            Text("Классическая Темная")
+                                            if userPreferredColorScheme == "dark" { Image(systemName: "checkmark") }
+                                        }
+                                    }
                                 }
+                                
+                                if !allNotes.isEmpty {
+                                    Section {
+                                        Button(role: .destructive, action: deleteAllNotes) {
+                                            Label("Удалить все заметки", systemImage: "trash")
+                                        }
+                                    }
+                                }
+                            } label: {
+                                Image(systemName: userPreferredColorScheme == "dark" ? "moon.fill" : (userPreferredColorScheme == "light" ? "sun.max.fill" : "circle.half.filled"))
+                                    .foregroundColor(.primary)
                             }
                         }
-                    } label: {
-                        Image(systemName: userPreferredColorScheme == "dark" ? "moon.fill" : (userPreferredColorScheme == "light" ? "sun.max.fill" : "circle.half.filled"))
-                            .foregroundColor(.primary)
-                    }
-                }
-                
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(action: createNewNote) {
-                        Image(systemName: "plus")
-                            .font(.system(size: 17, weight: .bold))
-                            .foregroundColor(.primary)
+                        
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button(action: createNewNote) {
+                                Image(systemName: "plus")
+                                    .font(.system(size: 17, weight: .bold))
+                                    .foregroundColor(.primary)
+                            }
+                        }
                     }
                 }
             }
@@ -267,4 +279,3 @@ public struct FocalFeedView: View {
         HapticManager.shared.notification(1)
     }
 }
-
