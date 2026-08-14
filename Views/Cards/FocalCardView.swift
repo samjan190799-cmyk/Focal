@@ -2,7 +2,8 @@
 // FocalCardView.swift
 // FocalApp
 //
-// Визуальная карточка заметки Focal с неоморфным стилем, адаптивным контрастом и интерактивным содержимым
+// Визуальная карточка текстовой заметки Focal с поддержкой создания и редактирования заметок,
+// неоморфным стилем, выбором шрифтов и настройки фоновых медиа (без блоков задач)
 //
 
 import SwiftUI
@@ -36,18 +37,18 @@ public struct FocalCardView: View {
                     overlayOpacity: note.overlayOpacity
                 )
                 
-                // Контент карточки поверх фона
+                // Содержимое текстовой заметки поверх фона
                 VStack(alignment: .leading, spacing: 14) {
-                    // Шапка заметки в стиле iPad ("FOR ANNA" style с бейджем перетаскивания и выбором шрифта)
+                    // Шапка заметки с датой и заголовком
                     VStack(alignment: .leading, spacing: 6) {
                         HStack {
-                            Text("DRAG")
-                                .font(.system(size: 8, weight: .black))
+                            Text("ЗАМЕТКА")
+                                .font(.system(size: 9, weight: .black))
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
                                 .background(Color.primary.opacity(0.12))
                                 .cornerRadius(4)
-                                .foregroundColor(textColor.opacity(0.7))
+                                .foregroundColor(textColor.opacity(0.8))
                             
                             Spacer()
                             
@@ -64,7 +65,7 @@ public struct FocalCardView: View {
                     .padding(12)
                     .glassmorphicCard(opacity: 0.2, cornerRadius: 16)
                     
-                    // Панель живого инспектора (BLUR %, OVERLAY %, FONTS & POSITION)
+                    // Панель живого инспектора (BLUR, OVERLAY, ШРИФТЫ)
                     if showInspector {
                         VStack(alignment: .leading, spacing: 10) {
                             HStack {
@@ -123,31 +124,38 @@ public struct FocalCardView: View {
                         .transition(.move(edge: .top).combined(with: .opacity))
                     }
                     
-                    // Блок со списком задач ACTIVE TASKS (RICH LIST)
-                    ToDoListView(note: note)
-                        .padding(12)
-                        .glassmorphicCard(opacity: 0.15, cornerRadius: 18)
+                    // Блок чистой текстовой заметки (Без чек-боксов и списков задач)
+                    ZStack(alignment: .topLeading) {
+                        if note.bodyText.isEmpty {
+                            Text("Напишите заметку здесь...")
+                                .font(.system(size: 15, weight: .regular, design: note.fontDesignStyle))
+                                .foregroundColor(textColor.opacity(0.45))
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 14)
+                        }
+                        
+                        TextEditor(text: $note.bodyText)
+                            .font(.system(size: 15, weight: .regular, design: note.fontDesignStyle))
+                            .foregroundColor(textColor)
+                            .scrollContentBackground(.hidden)
+                            .background(Color.clear)
+                            .padding(8)
+                            .frame(minHeight: 120, maxHeight: 220)
+                    }
+                    .glassmorphicCard(opacity: 0.18, cornerRadius: 18)
                     
                     Spacer(minLength: 8)
                     
-                    // Компактная нижняя док-панель инструментов iPhone (iPhone Dock Toolbar)
+                    // Компактная нижняя док-панель инструментов iPhone
                     iPhoneDockToolbarView(
                         note: note,
                         onAddBlock: {
-                            let newItem = ToDoItem(text: "Новый блок", isCompleted: false)
-                            newItem.note = note
-                            modelContext.insert(newItem)
-                            note.todoItems.append(newItem)
-                            try? modelContext.save()
-                            HapticManager.shared.impactMedium()
+                            note.bodyText += "\n• "
+                            HapticManager.shared.impactLight()
                         },
                         onAddList: {
-                            let newItem = ToDoItem(text: "Новая задача", isCompleted: false)
-                            newItem.note = note
-                            modelContext.insert(newItem)
-                            note.todoItems.append(newItem)
-                            try? modelContext.save()
-                            HapticManager.shared.impactMedium()
+                            note.bodyText += "\n"
+                            HapticManager.shared.impactLight()
                         },
                         onToggleStyles: {
                             withAnimation(.spring()) {
@@ -175,7 +183,7 @@ public struct FocalCardView: View {
                 .padding(14)
             }
         }
-        .frame(minHeight: 400)
+        .frame(minHeight: 380)
         .neumorphicCard(cornerRadius: 24)
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
@@ -211,9 +219,9 @@ public struct FocalCardView: View {
                             await NotificationManager.shared.scheduleNotification(
                                 id: note.id.uuidString,
                                 title: note.title.isEmpty ? "Заметка Focal" : note.title,
-                                body: "Не забудьте выполнить задачи (\(note.completedRatioText))",
+                                body: note.bodyText.isEmpty ? "Ваша заметка" : note.bodyText,
                                 date: selectedReminderDate,
-                                thumbnailData: note.todoItems.first(where: { $0.thumbnailData != nil })?.thumbnailData
+                                thumbnailData: note.backgroundImageData
                             )
                         }
                         showDatePicker = false
@@ -271,13 +279,4 @@ public struct FocalCardView: View {
             }
         }
     }
-    
-    private func deleteNote() {
-        withAnimation(.spring()) {
-            modelContext.delete(note)
-            try? modelContext.save()
-        }
-        HapticManager.shared.impactMedium()
-    }
 }
-

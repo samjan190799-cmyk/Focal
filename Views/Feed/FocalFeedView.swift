@@ -2,7 +2,7 @@
 // FocalFeedView.swift
 // FocalApp
 //
-// Главная лента карточек заметок Focal с поиском, фильтрацией и полноэкранным представлением задач
+// Главная лента карточек заметок Focal с поддержкой чистых текстовых заметок и раздельного полноэкранного стека задач
 //
 
 import SwiftUI
@@ -42,7 +42,7 @@ public struct FocalFeedView: View {
             let matchesFilter: Bool
             switch selectedFilter {
             case .notes:
-                matchesFilter = note.todoItems.isEmpty || !note.title.isEmpty
+                matchesFilter = note.todoItems.isEmpty || !note.bodyText.isEmpty || !note.title.isEmpty
             case .tasks:
                 matchesFilter = !note.todoItems.isEmpty
             case .bookmarked:
@@ -57,6 +57,7 @@ public struct FocalFeedView: View {
                 return matchesFilter
             } else {
                 let textMatch = note.title.localizedCaseInsensitiveContains(searchText) ||
+                    note.bodyText.localizedCaseInsensitiveContains(searchText) ||
                     note.todoItems.contains(where: { $0.text.localizedCaseInsensitiveContains(searchText) })
                 return matchesFilter && textMatch
             }
@@ -66,10 +67,10 @@ public struct FocalFeedView: View {
     public var body: some View {
         ZStack {
             if selectedFilter == .tasks {
-                // ПОЛНОЭКРАННЫЙ РЕЖИМ ЗАДАЧ В СТИЛЕ «SAVED NEWS» (Full Screen Takeover)
+                // ПОЛНОЭКРАННЫЙ РЕЖИМ ЗАДАЧ В СТИЛЕ «SAVED NEWS»
                 StackedTasksFeedView(
                     notes: allNotes,
-                    onCreateNote: createNewNote,
+                    onCreateNote: createNewTaskNote,
                     onSwitchToNotes: {
                         withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
                             selectedFilter = .notes
@@ -79,7 +80,7 @@ public struct FocalFeedView: View {
                 .transition(.opacity.combined(with: .scale(scale: 0.98)))
                 .ignoresSafeArea()
             } else {
-                // КЛАССИЧЕСКАЯ ЛЕНТА ЗАМЕТОК FOCAL
+                // КЛАССИЧЕСКАЯ ЛЕНТА ТЕКСТОВЫХ ЗАМЕТОК FOCAL
                 NavigationStack {
                     ZStack(alignment: .bottomTrailing) {
                         #if os(iOS)
@@ -96,7 +97,7 @@ public struct FocalFeedView: View {
                                 HStack {
                                     Image(systemName: "magnifyingglass")
                                         .foregroundColor(.secondary)
-                                    TextField("Поиск заметок и задач...", text: $searchText)
+                                    TextField("Поиск заметок...", text: $searchText)
                                         .textFieldStyle(.plain)
                                     if !searchText.isEmpty {
                                         Button(action: { searchText = "" }) {
@@ -151,15 +152,15 @@ public struct FocalFeedView: View {
                                     Text("Нет заметок")
                                         .font(.system(size: 18, weight: .bold))
                                         .foregroundColor(.primary)
-                                    Text("Нажмите '+', чтобы создать новую заметку")
+                                    Text("Нажмите '+', чтобы написать новую заметку")
                                         .font(.subheadline)
                                         .foregroundColor(.secondary)
                                         .multilineTextAlignment(.center)
                                         .padding(.horizontal, 32)
                                     
-                                    Button(action: createNewNote) {
+                                    Button(action: createNewTextNote) {
                                         HStack {
-                                            Image(systemName: "plus")
+                                            Image(systemName: "square.and.pencil")
                                             Text("Создать заметку")
                                         }
                                         .font(.system(size: 15, weight: .bold))
@@ -184,10 +185,10 @@ public struct FocalFeedView: View {
                             }
                         }
                         
-                        // Плавающая FAB-кнопка создания новой заметки (только для режима заметок)
-                        Button(action: createNewNote) {
-                            Image(systemName: "plus")
-                                .font(.system(size: 26, weight: .bold))
+                        // Плавающая FAB-кнопка создания новой заметки
+                        Button(action: createNewTextNote) {
+                            Image(systemName: "square.and.pencil")
+                                .font(.system(size: 24, weight: .bold))
                                 .foregroundColor(.white)
                                 .frame(width: 60, height: 60)
                                 .background(FocalTheme.gradientPrimary)
@@ -237,7 +238,7 @@ public struct FocalFeedView: View {
                         }
                         
                         ToolbarItem(placement: .topBarTrailing) {
-                            Button(action: createNewNote) {
+                            Button(action: createNewTextNote) {
                                 Image(systemName: "plus")
                                     .font(.system(size: 17, weight: .bold))
                                     .foregroundColor(.primary)
@@ -250,19 +251,30 @@ public struct FocalFeedView: View {
         .preferredColorScheme(colorSchemeOverride)
     }
     
-    private func createNewNote() {
+    private func createNewTextNote() {
         withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
             let newNote = FocalNote(
                 title: "",
+                bodyText: "",
                 backgroundMode: .fullBleed
             )
-            if selectedFilter == .tasks {
-                let initialTask = ToDoItem(text: "", isCompleted: false, priority: .medium)
-                initialTask.note = newNote
-                newNote.todoItems = [initialTask]
-            } else {
-                newNote.todoItems = []
-            }
+            newNote.todoItems = []
+            modelContext.insert(newNote)
+            try? modelContext.save()
+        }
+        HapticManager.shared.impactMedium()
+    }
+    
+    private func createNewTaskNote() {
+        withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
+            let newNote = FocalNote(
+                title: "",
+                bodyText: "",
+                backgroundMode: .fullBleed
+            )
+            let initialTask = ToDoItem(text: "", isCompleted: false, priority: .medium)
+            initialTask.note = newNote
+            newNote.todoItems = [initialTask]
             modelContext.insert(newNote)
             try? modelContext.save()
         }

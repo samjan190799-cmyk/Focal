@@ -13,6 +13,7 @@ import SwiftUI
 public final class FocalNote: Identifiable {
     @Attribute(.unique) public var id: UUID
     public var title: String
+    public var bodyText: String = ""
     public var createdAt: Date
     public var updatedAt: Date
     public var isLiked: Bool
@@ -67,6 +68,7 @@ public final class FocalNote: Identifiable {
     public init(
         id: UUID = UUID(),
         title: String = "",
+        bodyText: String = "",
         createdAt: Date = Date(),
         updatedAt: Date = Date(),
         isLiked: Bool = false,
@@ -82,6 +84,7 @@ public final class FocalNote: Identifiable {
     ) {
         self.id = id
         self.title = title
+        self.bodyText = bodyText
         self.createdAt = createdAt
         self.updatedAt = updatedAt
         self.isLiked = isLiked
