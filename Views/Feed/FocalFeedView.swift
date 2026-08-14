@@ -378,7 +378,7 @@ public struct UnifiedSavedCard: View {
     let totalCount: Int
     let selectedFilter: FocalFeedView.FeedFilter
     
-    var body: some View {
+    public var body: some View {
         let pastelBg = FocalTheme.pastelColor(for: index)
         let textDark = Color(red: 0.10, green: 0.10, blue: 0.14)
         
