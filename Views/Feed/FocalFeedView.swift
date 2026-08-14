@@ -3,7 +3,7 @@
 // FocalApp
 //
 // Единый ультра-премиальный полноэкранный интерфейс Focal («Saved News» Design System)
-// Унифицированная концепция для всех экранов: Заметки, Задачи, Закладки, Любимые и Напоминания.
+// Живой 3D свайп-движок карточек со сквозными жестами, экран настроек и унифицированная навигация.
 //
 
 import SwiftUI
@@ -19,7 +19,9 @@ public struct FocalFeedView: View {
     @State private var viewMode: ViewMode = .interactiveDeck
     @State private var activeCardIndex: Int = 0
     @State private var dragOffset: CGSize = .zero
+    @State private var showSettingsSheet: Bool = false
     @AppStorage("userPreferredColorScheme") private var userPreferredColorScheme: String = "system"
+    @AppStorage("swipeSensitivity") private var swipeSensitivity: Double = 80.0
     
     public enum ViewMode {
         case interactiveDeck // Веерная колода со свайпом
@@ -91,53 +93,28 @@ public struct FocalFeedView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 14) {
-                // MARK: - Единая Полноэкранная Шапка
-                HStack(spacing: 14) {
-                    // Переключатель темы / Меню
-                    Menu {
-                        Section("Оформление темы") {
-                            Button(action: { userPreferredColorScheme = "system" }) {
-                                HStack {
-                                    Text("Системная")
-                                    if userPreferredColorScheme == "system" { Image(systemName: "checkmark") }
-                                }
-                            }
-                            Button(action: { userPreferredColorScheme = "light" }) {
-                                HStack {
-                                    Text("Светлая")
-                                    if userPreferredColorScheme == "light" { Image(systemName: "checkmark") }
-                                }
-                            }
-                            Button(action: { userPreferredColorScheme = "dark" }) {
-                                HStack {
-                                    Text("Тёмная")
-                                    if userPreferredColorScheme == "dark" { Image(systemName: "checkmark") }
-                                }
-                            }
-                        }
-                        
-                        if !allNotes.isEmpty {
-                            Section {
-                                Button(role: .destructive, action: deleteAllNotes) {
-                                    Label("Очистить все", systemImage: "trash")
-                                }
-                            }
-                        }
-                    } label: {
-                        Image(systemName: userPreferredColorScheme == "dark" ? "moon.fill" : (userPreferredColorScheme == "light" ? "sun.max.fill" : "circle.half.filled"))
+                // MARK: - Полноэкранная Шапка с кнопкой Настроек
+                HStack(spacing: 12) {
+                    // Кнопка Настроек (Gear)
+                    Button(action: {
+                        showSettingsSheet = true
+                        HapticManager.shared.selection()
+                    }) {
+                        Image(systemName: "gearshape.fill")
                             .font(.system(size: 16, weight: .bold))
                             .foregroundColor(.white)
                             .frame(width: 42, height: 42)
                             .background(Color.white.opacity(0.12))
                             .clipShape(Circle())
                     }
+                    .buttonStyle(.plain)
                     
                     VStack(alignment: .leading, spacing: 2) {
                         Text(selectedFilter.headerTitle)
                             .font(.system(size: 24, weight: .black, design: .rounded))
                             .foregroundColor(.white)
                         
-                        Text("\(filteredNotes.count) элементов в стеке")
+                        Text("\(filteredNotes.count) в стеке • Свайп для просмотра")
                             .font(.system(size: 11, weight: .medium))
                             .foregroundColor(.white.opacity(0.6))
                     }
@@ -229,20 +206,30 @@ public struct FocalFeedView: View {
                         onCreate: { createNewItem(for: selectedFilter) }
                     )
                 } else if viewMode == .interactiveDeck {
-                    // ИНТЕРАКТИВНЫЙ ВЕЕР КАРТОЧЕК (DECK)
-                    UnifiedInteractiveDeckView(
-                        notes: filteredNotes,
-                        selectedFilter: selectedFilter,
-                        dragOffset: $dragOffset,
-                        activeCardIndex: $activeCardIndex,
-                        onSwipeNext: {
-                            withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
-                                activeCardIndex = (activeCardIndex + 1) % max(1, filteredNotes.count)
-                                dragOffset = .zero
+                    // ИНТЕРАКТИВНЫЙ ВЕЕР КАРТОЧЕК С ЖИВЫМ 3D СВАЙПОМ
+                    VStack(spacing: 8) {
+                        UnifiedInteractiveDeckView(
+                            notes: filteredNotes,
+                            selectedFilter: selectedFilter,
+                            dragOffset: $dragOffset,
+                            activeCardIndex: $activeCardIndex,
+                            swipeThreshold: swipeSensitivity,
+                            onSwipeNext: {
+                                withAnimation(.spring(response: 0.35, dampingFraction: 0.72)) {
+                                    activeCardIndex = (activeCardIndex + 1) % max(1, filteredNotes.count)
+                                    dragOffset = .zero
+                                }
+                                HapticManager.shared.impactMedium()
+                            },
+                            onSwipePrev: {
+                                withAnimation(.spring(response: 0.35, dampingFraction: 0.72)) {
+                                    activeCardIndex = (activeCardIndex - 1 + filteredNotes.count) % max(1, filteredNotes.count)
+                                    dragOffset = .zero
+                                }
+                                HapticManager.shared.impactLight()
                             }
-                            HapticManager.shared.impactMedium()
-                        }
-                    )
+                        )
+                    }
                 } else {
                     // КАСКАДНАЯ СКРОЛЛ-ЛЕНТА (CASCADE LIST)
                     ScrollView(.vertical, showsIndicators: false) {
@@ -271,6 +258,9 @@ public struct FocalFeedView: View {
             .padding(.bottom, 24)
         }
         .ignoresSafeArea()
+        .sheet(isPresented: $showSettingsSheet) {
+            SettingsView()
+        }
         .preferredColorScheme(colorSchemeOverride)
     }
     
@@ -292,22 +282,13 @@ public struct FocalFeedView: View {
             }
             modelContext.insert(newNote)
             try? modelContext.save()
+            activeCardIndex = 0
         }
         HapticManager.shared.impactMedium()
     }
-    
-    private func deleteAllNotes() {
-        withAnimation(.spring()) {
-            for note in allNotes {
-                modelContext.delete(note)
-            }
-            try? modelContext.save()
-        }
-        HapticManager.shared.notification(1)
-    }
 }
 
-// MARK: - Интерактивный Веер Карточек
+// MARK: - Интерактивный Веер Карточек с живым 3D-свайпом
 
 @MainActor
 struct UnifiedInteractiveDeckView: View {
@@ -315,56 +296,105 @@ struct UnifiedInteractiveDeckView: View {
     let selectedFilter: FocalFeedView.FeedFilter
     @Binding var dragOffset: CGSize
     @Binding var activeCardIndex: Int
+    let swipeThreshold: Double
     var onSwipeNext: () -> Void
+    var onSwipePrev: () -> Void
     
     var body: some View {
-        GeometryReader { _ in
-            ZStack {
-                let count = notes.count
-                let safeIndex = activeCardIndex % max(1, count)
-                
-                ForEach(0..<min(4, count), id: \.self) { stackPos in
-                    let itemIndex = (safeIndex + stackPos) % count
-                    let note = notes[itemIndex]
-                    let isTop = (stackPos == 0)
+        VStack(spacing: 6) {
+            GeometryReader { _ in
+                ZStack {
+                    let count = notes.count
+                    let safeIndex = activeCardIndex % max(1, count)
                     
-                    let yOffset = CGFloat(stackPos * 26) + (isTop ? dragOffset.height * 0.4 : 0)
-                    let xOffset = isTop ? dragOffset.width : 0
-                    let scale = 1.0 - (CGFloat(stackPos) * 0.05) + (isTop ? 0.02 : 0)
-                    let rotation = isTop ? Double(dragOffset.width / 18.0) : Double(stackPos * 2 - 2)
-                    
-                    UnifiedSavedCard(
-                        note: note,
-                        index: itemIndex,
-                        totalCount: count,
-                        selectedFilter: selectedFilter
-                    )
-                    .scaleEffect(scale)
-                    .offset(x: xOffset, y: yOffset)
-                    .rotationEffect(.degrees(rotation))
-                    .zIndex(Double(count - stackPos))
-                    .gesture(
-                        isTop ?
-                        DragGesture()
-                            .onChanged { value in
-                                dragOffset = value.translation
-                            }
-                            .onEnded { value in
-                                let threshold: CGFloat = 100
-                                if abs(value.translation.width) > threshold || abs(value.translation.height) > threshold {
-                                    onSwipeNext()
-                                } else {
-                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                        dragOffset = .zero
-                                    }
+                    ForEach(0..<min(4, count), id: \.self) { stackPos in
+                        let itemIndex = (safeIndex + stackPos) % count
+                        let note = notes[itemIndex]
+                        let isTop = (stackPos == 0)
+                        
+                        let dragProgress = min(1.0, abs(dragOffset.width) / 150.0)
+                        
+                        // Смещение, наклон и увеличение карточек в глубине стопки в реальном времени
+                        let yOffset = CGFloat(stackPos * 26) - (isTop ? 0 : dragProgress * 8.0) + (isTop ? dragOffset.height * 0.3 : 0)
+                        let xOffset = isTop ? dragOffset.width : 0
+                        let scale = 1.0 - (CGFloat(stackPos) * 0.05) + (isTop ? 0.0 : dragProgress * 0.03)
+                        let rotation = isTop ? Double(dragOffset.width / 12.0) : Double(stackPos * 2 - 2)
+                        
+                        UnifiedSavedCard(
+                            note: note,
+                            index: itemIndex,
+                            totalCount: count,
+                            selectedFilter: selectedFilter
+                        )
+                        .scaleEffect(scale)
+                        .offset(x: xOffset, y: yOffset)
+                        .rotationEffect(.degrees(rotation))
+                        .zIndex(Double(count - stackPos))
+                        // Сквозной жест перелистывания по всему телу карточки
+                        .simultaneousGesture(
+                            isTop ?
+                            DragGesture(minimumDistance: 10)
+                                .onChanged { value in
+                                    dragOffset = value.translation
                                 }
-                            } : nil
-                    )
+                                .onEnded { value in
+                                    let threshold = CGFloat(swipeThreshold)
+                                    if value.translation.width < -threshold {
+                                        // Свайп влево -> Следующая карточка
+                                        onSwipeNext()
+                                    } else if value.translation.width > threshold {
+                                        // Свайп вправо -> Предыдущая карточка
+                                        onSwipePrev()
+                                    } else if abs(value.translation.height) > threshold * 1.2 {
+                                        onSwipeNext()
+                                    } else {
+                                        withAnimation(.spring(response: 0.35, dampingFraction: 0.65)) {
+                                            dragOffset = .zero
+                                        }
+                                    }
+                                } : nil
+                        )
+                    }
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                .padding(.horizontal, 20)
+                .padding(.top, 10)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .padding(.horizontal, 20)
-            .padding(.top, 10)
+            
+            // MARK: - Переключатель карточек и Индикатор страниц
+            if notes.count > 1 {
+                HStack(spacing: 16) {
+                    Button(action: onSwipePrev) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundColor(.white.opacity(0.7))
+                            .frame(width: 32, height: 32)
+                            .background(Color.white.opacity(0.1))
+                            .clipShape(Circle())
+                    }
+                    .buttonStyle(.plain)
+                    
+                    HStack(spacing: 6) {
+                        ForEach(0..<min(8, notes.count), id: \.self) { dotIndex in
+                            Circle()
+                                .fill(dotIndex == (activeCardIndex % max(1, notes.count)) ? Color.white : Color.white.opacity(0.2))
+                                .frame(width: dotIndex == (activeCardIndex % max(1, notes.count)) ? 10 : 6, height: 6)
+                                .animation(.spring(), value: activeCardIndex)
+                        }
+                    }
+                    
+                    Button(action: onSwipeNext) {
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundColor(.white.opacity(0.7))
+                            .frame(width: 32, height: 32)
+                            .background(Color.white.opacity(0.1))
+                            .clipShape(Circle())
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(.top, 4)
+            }
         }
     }
 }

@@ -25,6 +25,7 @@
 		B10000010000000000000010 /* ToDoListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000010 /* ToDoListView.swift */; };
 		B10000010000000000000012 /* iPhoneDockToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000012 /* iPhoneDockToolbarView.swift */; };
 		B10000010000000000000013 /* StackedTasksFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000013 /* StackedTasksFeedView.swift */; };
+		B10000010000000000000014 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000014 /* SettingsView.swift */; };
 		B10000010000000000000011 /* Assets in Resources */ = {isa = PBXBuildFile; fileRef = A10000010000000000000011 /* Assets */; };
 /* End PBXBuildFile section */
 
@@ -47,6 +48,7 @@
 		A10000010000000000000010 /* ToDoListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/ToDo/ToDoListView.swift; sourceTree = "<group>"; };
 		A10000010000000000000012 /* iPhoneDockToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Cards/iPhoneDockToolbarView.swift; sourceTree = "<group>"; };
 		A10000010000000000000013 /* StackedTasksFeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Feed/StackedTasksFeedView.swift; sourceTree = "<group>"; };
+		A10000010000000000000014 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Settings/SettingsView.swift; sourceTree = "<group>"; };
 		A10000010000000000000011 /* Assets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets; sourceTree = "<group>"; };
 		A10000000000000000000005 /* Focal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Focal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -183,6 +185,7 @@
 				B10000010000000000000010 /* ToDoListView.swift in Sources */,
 				B10000010000000000000012 /* iPhoneDockToolbarView.swift in Sources */,
 				B10000010000000000000013 /* StackedTasksFeedView.swift in Sources */,
+				B10000010000000000000014 /* SettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
