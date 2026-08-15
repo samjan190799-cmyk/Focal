@@ -315,7 +315,7 @@ public struct FocalFeedView: View {
     }
 }
 
-// MARK: - Интерактивная 3D Горизонтальная Карусель Карточек
+// MARK: - Высокопроизводительная Нативная 3D Карусель Карточек (Zero-Lag ProMotion Engine)
 
 @MainActor
 struct HorizontalCarouselDeckView: View {
@@ -325,128 +325,98 @@ struct HorizontalCarouselDeckView: View {
     @Binding var activeCardIndex: Int
     let swipeThreshold: Double
     
-    @GestureState private var gestureDragOffset: CGFloat = 0
+    @State private var scrollPosition: Int? = 0
     
     var body: some View {
         VStack(spacing: 8) {
             GeometryReader { geometry in
                 let width = geometry.size.width
                 let cardWidth = min(width * 0.86, 350.0)
-                let count = notes.count
-                let safeActiveIndex = min(max(0, activeCardIndex), max(0, count - 1))
-                let currentOffset = dragOffset.width + gestureDragOffset
+                let sidePadding = max(16.0, (width - cardWidth) / 2.0)
                 
-                ZStack {
-                    ForEach(0..<count, id: \.self) { index in
-                        if abs(index - safeActiveIndex) <= 2 {
-                            let note = notes[index]
-                            let itemOffset = CGFloat(index - safeActiveIndex)
-                            let dragProgress = currentOffset / cardWidth
-                            let effectivePosition = itemOffset - dragProgress
-                            
-                            // Параметры 3D-карусели
-                            let scale = max(0.82, 1.0 - abs(effectivePosition) * 0.12)
-                            let opacity = max(0.35, 1.0 - abs(effectivePosition) * 0.5)
-                            let rotationY = -effectivePosition * 14.0
-                            let xPosition = effectivePosition * (cardWidth * 0.88)
-                            
+                ScrollView(.horizontal, showsIndicators: false) {
+                    LazyHStack(spacing: 16) {
+                        ForEach(Array(notes.enumerated()), id: \.element.id) { index, note in
                             UnifiedSavedCard(
                                 note: note,
                                 index: index,
-                                totalCount: count,
+                                totalCount: notes.count,
                                 selectedFilter: selectedFilter
                             )
                             .frame(width: cardWidth)
-                            .scaleEffect(scale)
-                            .rotation3DEffect(.degrees(rotationY), axis: (x: 0, y: 1, z: 0))
-                            .opacity(opacity)
-                            .offset(x: xPosition)
-                            .zIndex(Double(100 - abs(index - safeActiveIndex)))
-                            .shadow(color: Color.black.opacity(index == safeActiveIndex ? 0.35 : 0.1), radius: index == safeActiveIndex ? 20 : 8, x: 0, y: 10)
+                            .scrollTransition(.interactive, axis: .horizontal) { content, phase in
+                                content
+                                    .scaleEffect(phase.isIdentity ? 1.0 : 0.88)
+                                    .opacity(phase.isIdentity ? 1.0 : 0.65)
+                                    .rotation3DEffect(.degrees(phase.value * -10.0), axis: (x: 0, y: 1, z: 0))
+                            }
+                            .id(index)
                         }
                     }
+                    .scrollTargetLayout()
+                    .padding(.horizontal, sidePadding)
+                    .padding(.vertical, 8)
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                .contentShape(Rectangle())
-                .gesture(
-                    DragGesture(minimumDistance: 12)
-                        .updating($gestureDragOffset) { value, state, _ in
-                            state = value.translation.width
-                        }
-                        .onEnded { value in
-                            let translation = value.translation.width
-                            let velocity = value.predictedEndTranslation.width
-                            let threshold = max(40.0, CGFloat(swipeThreshold) * 0.6)
-                            
-                            if translation < -threshold || velocity < -160 {
-                                if safeActiveIndex < count - 1 {
-                                    withAnimation(.spring(response: 0.36, dampingFraction: 0.76)) {
-                                        activeCardIndex = safeActiveIndex + 1
-                                    }
-                                    HapticManager.shared.impactMedium()
-                                }
-                            } else if translation > threshold || velocity > 160 {
-                                if safeActiveIndex > 0 {
-                                    withAnimation(.spring(response: 0.36, dampingFraction: 0.76)) {
-                                        activeCardIndex = safeActiveIndex - 1
-                                    }
-                                    HapticManager.shared.impactMedium()
-                                }
-                            }
-                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                dragOffset = .zero
-                            }
-                        }
-                )
+                .scrollTargetBehavior(.viewAligned)
+                .scrollPosition(id: $scrollPosition)
+                .onChange(of: scrollPosition) { _, newIndex in
+                    if let newIndex, newIndex != activeCardIndex {
+                        activeCardIndex = newIndex
+                        HapticManager.shared.impactMedium()
+                    }
+                }
+                .onAppear {
+                    scrollPosition = activeCardIndex
+                }
             }
             
-            // MARK: - Элементы управления каруселью (Пагинация и Стрелки)
+            // MARK: - Управление и Точки-Пагинаторы
             if notes.count > 1 {
                 HStack(spacing: 16) {
                     Button(action: {
-                        if activeCardIndex > 0 {
+                        if let current = scrollPosition, current > 0 {
                             withAnimation(.spring(response: 0.36, dampingFraction: 0.76)) {
-                                activeCardIndex -= 1
+                                scrollPosition = current - 1
                             }
                             HapticManager.shared.impactLight()
                         }
                     }) {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 14, weight: .bold))
-                            .foregroundColor(activeCardIndex > 0 ? .white : .white.opacity(0.3))
+                            .foregroundColor((scrollPosition ?? 0) > 0 ? .white : .white.opacity(0.3))
                             .frame(width: 34, height: 34)
                             .background(Color.white.opacity(0.12))
                             .clipShape(Circle())
                     }
-                    .disabled(activeCardIndex <= 0)
+                    .disabled((scrollPosition ?? 0) <= 0)
                     .buttonStyle(.plain)
                     
                     HStack(spacing: 6) {
                         ForEach(0..<min(8, notes.count), id: \.self) { dotIndex in
-                            let isSelected = (dotIndex == activeCardIndex % max(1, notes.count))
+                            let isSelected = (dotIndex == (scrollPosition ?? 0) % max(1, notes.count))
                             Capsule()
                                 .fill(isSelected ? Color.white : Color.white.opacity(0.25))
                                 .frame(width: isSelected ? 18 : 6, height: 6)
-                                .animation(.spring(response: 0.3, dampingFraction: 0.7), value: activeCardIndex)
+                                .animation(.spring(response: 0.3, dampingFraction: 0.7), value: scrollPosition)
                         }
                     }
                     
                     Button(action: {
-                        if activeCardIndex < notes.count - 1 {
+                        if let current = scrollPosition, current < notes.count - 1 {
                             withAnimation(.spring(response: 0.36, dampingFraction: 0.76)) {
-                                activeCardIndex += 1
+                                scrollPosition = current + 1
                             }
                             HapticManager.shared.impactLight()
                         }
                     }) {
                         Image(systemName: "chevron.right")
                             .font(.system(size: 14, weight: .bold))
-                            .foregroundColor(activeCardIndex < notes.count - 1 ? .white : .white.opacity(0.3))
+                            .foregroundColor((scrollPosition ?? 0) < notes.count - 1 ? .white : .white.opacity(0.3))
                             .frame(width: 34, height: 34)
                             .background(Color.white.opacity(0.12))
                             .clipShape(Circle())
                     }
-                    .disabled(activeCardIndex >= notes.count - 1)
+                    .disabled((scrollPosition ?? 0) >= notes.count - 1)
                     .buttonStyle(.plain)
                 }
                 .padding(.top, 4)
