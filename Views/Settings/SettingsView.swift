@@ -20,6 +20,7 @@ public struct SettingsView: View {
     @AppStorage("hapticIntensity") private var hapticIntensity: String = "medium"
     @AppStorage("swipeSensitivity") private var swipeSensitivity: Double = 80.0
     @AppStorage("defaultFontDesign") private var defaultFontDesign: String = "rounded"
+    @AppStorage("appLanguage") private var appLanguage: String = "ru"
     
     @State private var showDeleteConfirmation: Bool = false
     
@@ -32,6 +33,21 @@ public struct SettingsView: View {
                     .ignoresSafeArea()
                 
                 List {
+                    // MARK: - 0. Язык и Локализация
+                    let currentLang = AppLanguage(rawValue: appLanguage) ?? .russian
+                    Section(header: Text(currentLang.localizedSettingsHeader).foregroundColor(.white.opacity(0.6))) {
+                        Picker(currentLang.localizedLanguagePickerTitle, selection: $appLanguage) {
+                            ForEach(AppLanguage.allCases) { language in
+                                Text(language.displayName).tag(language.rawValue)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        .onChange(of: appLanguage) { _, _ in
+                            HapticManager.shared.selection()
+                        }
+                    }
+                    .listRowBackground(Color.white.opacity(0.08))
+                    
                     // MARK: - 1. Оформление и Темы
                     Section(header: Text("Внешний вид и Тема").foregroundColor(.white.opacity(0.6))) {
                         Picker("Тема оформления", selection: $userPreferredColorScheme) {
